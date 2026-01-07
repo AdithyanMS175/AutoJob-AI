@@ -1,11 +1,11 @@
-const users = require('../models/userModel')
+const users = require("../models/userModel");
 const jwt = require(`jsonwebtoken`);
 
 //register
 exports.registerController = async (req, res) => {
   console.log("Inside registerController");
   const { email, password } = req.body;
-  // console.log(userName,userEmail,userPassword);
+  console.log(email,password);
   // res.status(200).json("Request Recieved")
 
   try {
@@ -13,7 +13,7 @@ exports.registerController = async (req, res) => {
     if (existingUser) {
       res.status(409).json("User Already Exists. Please Login!!!");
     } else {
-      const newUser = await users.create({  email, password });
+      const newUser = await users.create({ email, password });
       res.status(200).json(newUser);
     }
   } catch (error) {
@@ -82,3 +82,5 @@ exports.googleLoginController = async (req, res) => {
     res.status(500).json(err);
   }
 };
+
+

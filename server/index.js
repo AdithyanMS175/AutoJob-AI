@@ -10,6 +10,9 @@ autoJobServer.use(cors());
 
 autoJobServer.use(express.json());
 
+autoJobServer.use(router);
+
+
 const PORT = 3000;
 
 autoJobServer.listen(PORT,()=>{
