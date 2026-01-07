@@ -1,0 +1,58 @@
+import { useState } from 'react'
+import './App.css'
+import { Route, Routes } from 'react-router-dom'
+import HomePage from './HomePage'
+import Auth from './pages/Auth'
+import Home from './user/pages/Home'
+import Profile from './user/pages/Profile'
+import Pnf from './pages/Pnf'
+import Settings from './user/pages/Settings'
+import RecruiterDashboard from './recruiter/pages/RecruiterDashboard'
+import RecruiterLayout from './recruiter/components/RecruiterLayout'
+import PostJob from './recruiter/pages/PostJob'
+import AIMatchBadge from './recruiter/components/AIMatchBadge'
+import ApplicantTable from './recruiter/components/ApplicationTable'
+import JobCard from './recruiter/components/JobCard'
+import StatusDropdown from './recruiter/components/StatusDropdown'
+import StatsWidget from './recruiter/components/StatsWidget'
+import AdminHome from './admin/pages/AdminHome'
+
+function App() {
+
+
+  return (
+    <>
+      <Routes>
+        <Route path='/' element={<HomePage />} />
+        <Route path='/login' element={<Auth />} />
+        <Route path='/signup' element={<Auth registerURL={true} />} />
+
+        {/* user  */}
+        <Route path='/user/home' element={<Home />} />
+        <Route path='/user/profile' element={<Profile />} />
+        <Route path='/user/settings' element={<Settings />} />
+
+        {/* recruiter  */}
+        <Route path='/recruiter' element={<RecruiterLayout />} >
+         <Route  path='home' element={<RecruiterDashboard />} />
+         <Route  path='post-job' element={<PostJob />} />
+         <Route  path='aimatchbadge' element={<AIMatchBadge />} />
+         <Route  path='applicationtable' element={<ApplicantTable />} />
+         <Route  path='jobcard' element={<JobCard />} />
+         <Route  path='statusdropdown' element={<StatusDropdown />} />
+         <Route  path='statuswidget' element={<StatsWidget />} />
+
+        </Route>
+
+        <Route path='/admin/home' element={<AdminHome/>}/>
+        
+
+
+
+        <Route path="/*" element={<Pnf />} />
+      </Routes>
+    </>
+  )
+}
+
+export default App

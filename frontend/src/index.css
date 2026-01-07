@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+*{
+    font-family: Mori, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+}
+/* the Wave Animation */
+
+ @keyframes wave-flow {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-wave {
+          animation: wave-flow 2s linear infinite;
+        }
