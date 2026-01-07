@@ -4,6 +4,8 @@ import { FcGoogle } from 'react-icons/fc';
 import { FaFacebook, FaApple } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase } from 'lucide-react';
+import { loginAPI, registerAPI } from '../services/allAPI';
+import { toast, ToastContainer } from 'react-toastify';
 
 // Placeholder Logo
 const Logo = () => (
@@ -19,6 +21,12 @@ const Logo = () => (
 const Auth = ({ registerURL }) => {
 
   const navigate = useNavigate();
+  const [userDetails, setUserDetails] = useState({
+    email: "",
+    password: "",
+  })
+  const [invalidEmail, setInvalidEmail] = useState(false)
+  const [invalidPassword, setInvalidPassword] = useState(false)
 
 
   const toggleMode = () => setregisterURL(!registerURL);
@@ -29,14 +37,123 @@ const Auth = ({ registerURL }) => {
     exit: { opacity: 0, x: 20, transition: { duration: 0.3, ease: "easeIn" } }
   };
 
+
+  const validateInput = (InputTag) => {
+
+    const { name, value } = InputTag;
+
+    if (name === "email") {
+      if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        setUserDetails({ ...userDetails, email: value });
+        setInvalidEmail(false);
+      } else {
+        setInvalidEmail(true);
+      }
+    }
+
+    else if (name === "password") {
+      if (/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(value)) {
+        setUserDetails({ ...userDetails, password: value });
+        setInvalidPassword(false);
+      } else {
+        setInvalidPassword(true);
+      }
+    }
+  };
+
+
+  const handleregister = async (e) => {
+    console.log("clicked");
+
+    e.preventDefault();
+    const { email, password } = userDetails;
+    console.log(email, password);
+
+
+    if (email && password) {
+      try {
+
+        const result = await registerAPI(userDetails);
+        console.log(result)
+
+        if (result.status == 200) {
+          toast.success("Registered Successfully")
+          setUserDetails({ email: "", password: "" })
+          navigate('/login')
+
+        } else if (result.status == 409) {
+          toast.warning(result.response.data);
+          setUserDetails({ email: "", password: "" })
+          navigate('/login')
+        }
+        else {
+          toast.error("Something went error !!!")
+          setUserDetails({ email: "", password: "" })
+
+        }
+
+
+      } catch (error) {
+        console.log(error);
+        toast.error("Something Went Wrong Try again Later")
+
+      }
+
+    }
+
+
+
+  }
+
+  const handleLogin = async (e) => {
+
+    e.preventDefault()
+    const { email, password } = userDetails;
+
+    if (email && password) {
+      const result = await loginAPI(userDetails);
+      if (result.status == 200) {
+        toast.success("Login Successfull");
+        sessionStorage.setItem("token", result.data.token);
+        sessionStorage.setItem("user", JSON.stringify(result.data.user))
+        setUserDetails({ email: "", password: "" })
+        setAuthorisedUser(true);
+        setTimeout(() => {
+          if (result.data.user.role == "admin") {
+            navigate('/admin/home')
+          } else {
+            navigate('/');
+          }
+        }, 2500)
+      } else if (result.status == 401 || result.status == 404) {
+        toast.warning(result.response.data)
+        setUserDetails({ email: "", password: "" })
+
+
+      } else {
+        toast.error("Something Went Wrong");
+        console.log(result);
+
+      }
+    } else {
+      toast.warning("Please fill the form completely")
+    }
+
+
+
+
+  }
+
+
+
   return (
-    
+
     <div className="h-screen w-full bg-black text-white flex items-center justify-center p-4 sm:p-6 lg:p-8 overflow-hidden">
 
-    
+
       <div className="w-full max-w-6xl h-full md:h-[85vh] grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 bg-zinc-900/30 p-6 md:p-10 rounded-[2.5rem] border border-zinc-800/50 backdrop-blur-sm shadow-2xl">
 
-     
+
         <div className="flex flex-col justify-center h-full overflow-y-auto md:overflow-visible custom-scrollbar">
           <Logo />
 
@@ -67,10 +184,15 @@ const Auth = ({ registerURL }) => {
                   </label>
                   <input
                     type="email"
+                    name='email'
                     id="email"
                     className="w-full p-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 outline-none transition-all placeholder:text-zinc-600 text-sm"
                     placeholder="youremail@yourdomain.com"
+
+                    onChange={(e) => validateInput(e.target)}
                   />
+                  {invalidEmail && <span className='text-red-500 text-xs font-medum ml-1'>Email is not Valid</span>}
+
                 </div>
                 <div>
                   <label htmlFor="password" className="block text-xs font-medium text-zinc-300 mb-1.5 pl-1">
@@ -78,14 +200,40 @@ const Auth = ({ registerURL }) => {
                   </label>
                   <input
                     type="password"
+                    name='password'
                     id="password"
                     className="w-full p-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 outline-none transition-all placeholder:text-zinc-600 text-sm"
                     placeholder="Create a password"
+
+                    onChange={(e) => validateInput(e.target)}
+
                   />
+                  {invalidPassword &&
+                    <div className='flex flex-col'>
+                      <span className='text-red-500 text-xs font-medum ml-2'>
+                        Length: 8 characters
+                      </span>
+
+                      <span className='text-red-500 text-xs font-medum ml-2'>
+                        Must contain at least one letter (A-Z or a-z)
+                      </span>
+
+                      <span className='text-red-500 text-xs font-medum ml-2'>
+                        Must contain at least one digit (0-9)
+                      </span>
+
+                      <span className='text-red-500 text-xs font-medum ml-2'>
+                        Can ONLY contain letters and numbers
+                      </span>
+                    </div>
+                  }
+
                 </div>
                 <button
-                  type="submit"
+                  type="button"
                   className="cursor-pointer w-full py-3 bg-zinc-700 hover:bg-zinc-600 text-white rounded-xl font-semibold transition-colors duration-200 shadow-lg shadow-zinc-900/20"
+                  onClick={registerURL ? handleregister : handleLogin}
+
                 >
                   {registerURL ? 'Sign Up' : 'Login'}
                 </button>
@@ -164,6 +312,8 @@ const Auth = ({ registerURL }) => {
           </div>
         </motion.div>
       </div>
+      <ToastContainer position='top-center' autoClose={3000} theme='colored' />
+
     </div>
   );
 };
