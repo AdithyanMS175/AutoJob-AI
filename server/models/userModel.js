@@ -34,7 +34,7 @@ const userSchema = new Schema({
   },
   skills: {
     type: Array,
-    default: "",
+    default: [],
   },
 
   experience: [
@@ -56,7 +56,7 @@ const userSchema = new Schema({
 
   resumes: {
     type: Array,
-    default: "",
+    default: [],
   },
 
   linkedin: {

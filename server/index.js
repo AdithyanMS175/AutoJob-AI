@@ -10,6 +10,9 @@ autoJobServer.use(cors());
 
 autoJobServer.use(express.json());
 
+autoJobServer.use('/uploads',express.static('./uploads'))
+
+
 autoJobServer.use(router);
 
 
