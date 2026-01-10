@@ -4,8 +4,10 @@ import { FcGoogle } from 'react-icons/fc';
 import { FaFacebook, FaApple } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase } from 'lucide-react';
-import { loginAPI, registerAPI } from '../services/allAPI';
+import { googleLoginAPI, loginAPI, registerAPI } from '../services/allAPI';
 import { toast, ToastContainer } from 'react-toastify';
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from "jwt-decode";
 
 // Placeholder Logo
 const Logo = () => (
@@ -18,18 +20,63 @@ const Logo = () => (
 
 );
 
+const RoleToggle = ({ role, setRole }) => {
+  return (
+    <div className="relative flex p-1 bg-zinc-800/50 rounded-xl border border-zinc-700/50 mb-6">
+      {/* Sliding Background */}
+      <motion.div
+        className="absolute inset-y-1 bg-orange-500 rounded-lg shadow-lg shadow-orange-500/20"
+        initial={false}
+        animate={{
+          x: role === 'candidate' ? 0 : '100%',
+          width: '49%',
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      />
+
+      <button
+        type="button"
+        onClick={() => setRole('candidate')}
+        className={`relative z-10 w-1/2 py-2 text-xs font-semibold transition-colors duration-200 ${role === 'candidate' ? 'text-white' : 'text-zinc-400'
+          }`}
+      >
+        Job Seeker
+      </button>
+
+      <button
+        type="button"
+        onClick={() => setRole('recruiter')}
+        className={`relative z-10 w-1/2 py-2 text-xs font-semibold transition-colors duration-200 ${role === 'recruiter' ? 'text-white' : 'text-zinc-400'
+          }`}
+      >
+        Recruiter
+      </button>
+    </div>
+  );
+};
+
 const Auth = ({ registerURL }) => {
 
   const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState({
     email: "",
     password: "",
+    role: "recruiter"
   })
+
   const [invalidEmail, setInvalidEmail] = useState(false)
   const [invalidPassword, setInvalidPassword] = useState(false)
 
 
-  const toggleMode = () => setregisterURL(!registerURL);
+  const toggle = () => {
+    console.log('toogleclicked');
+    if (!registerURL) {
+      navigate('/signup')
+    } else {
+      navigate('/login')
+    }
+
+  }
 
   const formVariants = {
     hidden: { opacity: 0, x: -20 },
@@ -66,11 +113,11 @@ const Auth = ({ registerURL }) => {
     console.log("clicked");
 
     e.preventDefault();
-    const { email, password } = userDetails;
-    console.log(email, password);
+    const { email, password, role } = userDetails;
+    console.log(email, password, role);
 
 
-    if (email && password) {
+    if (email && password && role) {
       try {
 
         const result = await registerAPI(userDetails);
@@ -117,12 +164,14 @@ const Auth = ({ registerURL }) => {
         sessionStorage.setItem("token", result.data.token);
         sessionStorage.setItem("user", JSON.stringify(result.data.user))
         setUserDetails({ email: "", password: "" })
-        setAuthorisedUser(true);
+        // setAuthorisedUser(true);
         setTimeout(() => {
           if (result.data.user.role == "admin") {
             navigate('/admin/home')
-          } else {
-            navigate('/');
+          } else if (result.data.user.role == "candidate") {
+            navigate('/user/home');
+          } else if (result.data.user.role == "recruiter") {
+            navigate('/recruiter/home');
           }
         }, 2500)
       } else if (result.status == 401 || result.status == 404) {
@@ -144,6 +193,41 @@ const Auth = ({ registerURL }) => {
 
   }
 
+
+  const handleGoogleLogin = async (credentialResponse) => {
+    const { email, password ,role } = userDetails;
+    console.log(role);
+    console.log(userDetails.role);
+    console.log("Inside handleGoogleLogin");
+    console.log('credentialResponse',credentialResponse);
+    const decode = jwtDecode(credentialResponse.credential)
+    console.log('decode',decode);
+    const result = await googleLoginAPI({ username: decode.name, email: decode.email, password: "googlePassword", picture: decode.picture, role: userDetails.role })
+    console.log('result.data.user',result.data.user)
+    if (result.status == 200) {
+      toast.success("Login Successfull")
+      sessionStorage.setItem("token", result.data.token)
+      sessionStorage.setItem("user", JSON.stringify(result.data.user))
+      
+      setTimeout(() => {
+        if (result.data.user.role == "admin") {
+          navigate('/admin/home')
+        } else if (result.data.user.role == "candidate") {
+          navigate('/user/home');
+        } else if (result.data.user.role == "recruiter") {
+          navigate('/recruiter/home');
+        }
+      }, 2500)
+
+    } else {
+      toast.warning("Please fill the form completely")
+      console.log(result);
+
+    }
+
+
+
+  }
 
 
   return (
@@ -169,6 +253,9 @@ const Auth = ({ registerURL }) => {
               <h1 className="text-3xl font-bold mb-2">
                 {registerURL ? 'Create an account' : 'Welcome back!'}
               </h1>
+
+
+
               <p className="text-zinc-400 mb-6 text-sm leading-relaxed">
                 {registerURL
                   ?
@@ -176,6 +263,13 @@ const Auth = ({ registerURL }) => {
                   'We empower developers and technical teams to create, simulate, and manage AI-driven workflows visually.'
                 }
               </p>
+
+              
+                <RoleToggle
+                  role={userDetails.role}
+                  setRole={(val) => setUserDetails({ ...userDetails, role: val })}
+                />
+              
 
               <form className="space-y-4">
                 <div>
@@ -249,7 +343,16 @@ const Auth = ({ registerURL }) => {
               {/* Social Login Buttons */}
               <div className="grid grid-cols-3 gap-3">
                 <button className="cursor-pointer flex justify-center items-center py-2.5 bg-zinc-800/50 rounded-xl hover:bg-zinc-800 transition-colors border border-zinc-700/50">
-                  <FcGoogle size={20} />
+                  {/* <FcGoogle size={20} /> */}
+                  <GoogleLogin className="hidden"
+                    onSuccess={credentialResponse => {
+                      console.log('credentialResponse',credentialResponse);
+                      handleGoogleLogin(credentialResponse)
+                    }}
+                    onError={() => {
+                      console.log('Login Failed');
+                    }}
+                  />;
                 </button>
                 <button className="cursor-pointer flex justify-center items-center py-2.5 bg-zinc-800/50 rounded-xl hover:bg-zinc-800 transition-colors border border-zinc-700/50 text-[#1877F2]">
                   <FaFacebook size={20} />
@@ -262,8 +365,8 @@ const Auth = ({ registerURL }) => {
               <p className="text-center text-zinc-400 mt-6 text-xs">
                 {registerURL ? "Already have an account?" : "Don't have an account?"}{' '}
                 <button
-                  onClick={toggleMode}
-                  className="text-orange-500 hover:text-orange-400 font-semibold ml-1 transition-colors cursor-pointer"
+                  onClick={toggle}
+                  className="text-orange-500 hover:text-orange-400 font-semibold ml-1 transition-colors cursor-pointer bg-white"
                 >
                   {registerURL ? 'login' : 'Sign Up'}
                 </button>

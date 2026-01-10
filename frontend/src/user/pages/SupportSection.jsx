@@ -1,5 +1,5 @@
 import React from 'react'
-import InputGroup from '../components/InputGroup'
+import {InputGroup} from '../components/InputGroup'
 import { Mail, Shield } from 'lucide-react'
 
 function SupportSection() {

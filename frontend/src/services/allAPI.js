@@ -1,4 +1,3 @@
-
 import commonAPI from "./commonAPI"
 import serverURL from "./serverURL"
 
@@ -11,5 +10,9 @@ export const loginAPI = async (reqBody) => {
 }
 
 export const googleLoginAPI = async (reqBody) => {
+    return await commonAPI("POST",`${serverURL}/google-login`,reqBody)
+}
+
+export const getUserAPI = async (id,reqBody) => {
     return await commonAPI("POST",`${serverURL}/google-login`,reqBody)
 }
