@@ -16,6 +16,8 @@ import Profile from './Profile';
 import BillingSection from './BillingSection';
 import SupportSection from './SupportSection';
 import ResumeSettings from './ResumeSettings';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 // --- SECTIONS CONFIGURATION ---
 const MENU_ITEMS = [
@@ -27,7 +29,20 @@ const MENU_ITEMS = [
 ];
 
 const Settings = () => {
+
     const [activeTab, setActiveTab] = useState('profile');
+    const navigate = useNavigate();
+
+    const Logout = () => {
+        sessionStorage.clear("user")
+        sessionStorage.clear("token")
+        navigate('/login')
+        toast.success("Logged Out Successfully");
+        
+    }
+
+
+
 
     return (
         <div className="flex h-screen bg-[#0a0a0a] text-gray-100 font-sans overflow-hidden">
@@ -67,7 +82,7 @@ const Settings = () => {
                     })}
                 </nav>
 
-                <div className="p-6 text-xs  text-center text-red-500 border rounded-full bg-red-200 cursor-pointer hover:bg-red-400 hover:text-white">
+                <div onClick={Logout} className="p-3 text-xs  text-center text-white mb-3 border-purple-500 rounded-full bg-purple-500 cursor-pointer hover:bg-red-400 hover:text-white">
                     Logout
                 </div>
             </aside>

@@ -13,6 +13,9 @@ const StatCard = ({ title, count, trend }) => (
 );
 
 const RecruiterDashboard = () => {
+
+
+  
   return (
     <div className="space-y-8">
       {/* Header */}

@@ -158,6 +158,7 @@ const Auth = ({ registerURL }) => {
     const { email, password } = userDetails;
 
     if (email && password) {
+
       const result = await loginAPI(userDetails);
       if (result.status == 200) {
         toast.success("Login Successfull");
@@ -177,12 +178,9 @@ const Auth = ({ registerURL }) => {
       } else if (result.status == 401 || result.status == 404) {
         toast.warning(result.response.data)
         setUserDetails({ email: "", password: "" })
-
-
       } else {
         toast.error("Something Went Wrong");
         console.log(result);
-
       }
     } else {
       toast.warning("Please fill the form completely")
@@ -195,20 +193,20 @@ const Auth = ({ registerURL }) => {
 
 
   const handleGoogleLogin = async (credentialResponse) => {
-    const { email, password ,role } = userDetails;
+    const { email, password, role } = userDetails;
     console.log(role);
     console.log(userDetails.role);
     console.log("Inside handleGoogleLogin");
-    console.log('credentialResponse',credentialResponse);
+    console.log('credentialResponse', credentialResponse);
     const decode = jwtDecode(credentialResponse.credential)
-    console.log('decode',decode);
+    console.log('decode', decode);
     const result = await googleLoginAPI({ username: decode.name, email: decode.email, password: "googlePassword", picture: decode.picture, role: userDetails.role })
-    console.log('result.data.user',result.data.user)
+    console.log('result.data.user', result.data.user)
     if (result.status == 200) {
       toast.success("Login Successfull")
       sessionStorage.setItem("token", result.data.token)
       sessionStorage.setItem("user", JSON.stringify(result.data.user))
-      
+
       setTimeout(() => {
         if (result.data.user.role == "admin") {
           navigate('/admin/home')
@@ -229,18 +227,22 @@ const Auth = ({ registerURL }) => {
 
   }
 
+  
+
+
+
+
+
+
+
+
 
   return (
 
     <div className="h-screen w-full bg-black text-white flex items-center justify-center p-4 sm:p-6 lg:p-8 overflow-hidden">
-
-
       <div className="w-full max-w-6xl h-full md:h-[85vh] grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 bg-zinc-900/30 p-6 md:p-10 rounded-[2.5rem] border border-zinc-800/50 backdrop-blur-sm shadow-2xl">
-
-
         <div className="flex flex-col justify-center h-full overflow-y-auto md:overflow-visible custom-scrollbar">
           <Logo />
-
           <AnimatePresence mode="wait">
             <motion.div
               key={registerURL ? 'signup' : 'login'}
@@ -264,12 +266,12 @@ const Auth = ({ registerURL }) => {
                 }
               </p>
 
-              
-                <RoleToggle
-                  role={userDetails.role}
-                  setRole={(val) => setUserDetails({ ...userDetails, role: val })}
-                />
-              
+
+              <RoleToggle
+                role={userDetails.role}
+                setRole={(val) => setUserDetails({ ...userDetails, role: val })}
+              />
+
 
               <form className="space-y-4">
                 <div>
@@ -346,7 +348,7 @@ const Auth = ({ registerURL }) => {
                   {/* <FcGoogle size={20} /> */}
                   <GoogleLogin className="hidden"
                     onSuccess={credentialResponse => {
-                      console.log('credentialResponse',credentialResponse);
+                      console.log('credentialResponse', credentialResponse);
                       handleGoogleLogin(credentialResponse)
                     }}
                     onError={() => {

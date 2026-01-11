@@ -15,21 +15,18 @@ import React, { useEffect, useState } from 'react'
 import { InputGroup, TextArea } from '../components/InputGroup';
 import SkillsInput from '../components/SkillsGroup';
 import serverURL from '../../services/serverURL';
-
-
-
-
+import { toast, ToastContainer } from 'react-toastify';
+import { editUserAPI } from '../../services/allAPI';
+import { useNavigate } from 'react-router-dom';
+import { getStoredUser } from '../../services/userStorage';
 
 
 function Profile() {
-
-
-
-
   const [userDetails, setUserDetails] = useState({
     username: "",
     email: "",
     password: "",
+    cpassword: "",
     picture: "",
     education: [
       { degree: "", institution: "", year: "" }
@@ -39,28 +36,29 @@ function Profile() {
     ],
     skills: []
   });
-
   const [existingUserImage, setExistingUserImage] = useState("")
   const [preview, setPreview] = useState("")
-
+  const [pswdMatch, setPswdMatch] = useState(true);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     fetchUser();
   }, [])
 
-
-  console.log(userDetails);
+  // console.log(userDetails);
 
   const fetchUser = () => {
-    const storedUser = sessionStorage.getItem("user");
+    const storedUser = getStoredUser();
+    console.log("storeduser",storedUser);
+    
     if (storedUser) {
-      const user = JSON.parse(storedUser);
+      const user = storedUser;
 
       setUserDetails({
         id: user._id || "",
         username: user.username || "",
         email: user.email || "",
-        password: user.password || "",
+        password: "",
         picture: user.picture || "",
         bio: user.bio || "",
         role: user.role || "",
@@ -88,9 +86,127 @@ function Profile() {
   }
 
 
-  const handleSubmit = async (id) => {
-    console.log(userDetails)
-  }
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    // optional validation
+    if (!file.type.startsWith("image/")) {
+      toast.warning("Please select an image file");
+      return;
+    }
+
+    if (file.size > 1024 * 1024) {
+      toast.warning("Image must be less than 1MB");
+      return;
+    }
+
+    // preview
+    setPreview(URL.createObjectURL(file));
+
+    // store file for FormData
+    setUserDetails(prev => ({
+      ...prev,
+      picture: file
+    }));
+  };
+
+  const checkPasswordMatch = (data) => {
+    setUserDetails(prev => ({
+      ...prev,
+      cpassword: data
+    }));
+
+    setPswdMatch(prevPassword =>
+      userDetails.password === data
+    );
+  };
+
+
+  const handleUpdateUser = async () => {
+    const {
+      username,
+      password,
+      cpassword,
+      bio,
+      id,
+      linkedin,
+      github
+    } = userDetails;
+
+    // basic validation
+    if (!username || !password || !cpassword || !bio || !linkedin || !github) {
+      toast.warning("Please fill the form completely");
+      return;
+    }
+
+    //password match check
+    if (!pswdMatch) {
+      toast.warning("Passwords do not match");
+      return;
+    }
+
+    // token check
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+      toast.error("Unauthorized. Please login again");
+      return;
+    }
+
+    //  header
+    const reqHeader = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    // FormData using for-loop (YOUR STYLE)
+    const reqBody = new FormData();
+
+    for (let key in userDetails) {
+
+      // skip unwanted fields
+      if (key === "cpassword") continue;
+
+      // image handling
+      if (key === "picture") {
+        preview
+          ? reqBody.append("picture", userDetails.picture)
+          : reqBody.append("picture", existingUserImage);
+      }
+
+      // arrays / objects
+      else if (
+        key === "education" ||
+        key === "skills" ||
+        key === "experience"
+      ) {
+        reqBody.append(key, JSON.stringify(userDetails[key]));
+      }
+
+      // normal fields
+      else {
+        reqBody.append(key, userDetails[key]);
+      }
+    }
+
+    //  API call
+    const result = await editUserAPI(id, reqBody, reqHeader);
+
+    // response handling
+    if (result.status === 200) {
+      toast.success("Profile updated successfully");
+
+      sessionStorage.setItem("user", JSON.stringify(result.data));
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+    } else {
+      console.log(result);
+      toast.error("Something went wrong");
+    }
+  };
+
 
 
 
@@ -127,7 +243,20 @@ function Profile() {
 
 
         <div>
-          <button className="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">Change Avatar</button>
+          <button
+            type="button"
+            onClick={() => document.getElementById("profileImage").click()}
+            className="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+          >
+            Change Avatar
+          </button>
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            id="profileImage"
+            onChange={(e) => handleImageChange(e)}
+          />
           <p className="text-xs text-gray-500 mt-2">JPG, GIF or PNG. 1MB max.</p>
         </div>
       </div>
@@ -140,11 +269,11 @@ function Profile() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <InputGroup placeholder="Password" value={userDetails.password} onChange={(e) => setUserDetails({ ...userDetails, password: e.target.value })} />
-          <InputGroup placeholder="Confirm Password" />
+          <InputGroup placeholder="Password" type='password' value={userDetails.password} onChange={(e) => setUserDetails({ ...userDetails, password: e.target.value })} />
+          <InputGroup placeholder="Confirm Password" type="password" value={userDetails.cpassword || ""} onChange={(e) => checkPasswordMatch(e.target.value)} />
         </div>
 
-        <InputGroup placeholder="Job Title" />
+        {/* <InputGroup placeholder="Job Title" /> */}
         <TextArea placeholder="Bio" value={userDetails.bio} onChange={(e) => setUserDetails({ ...userDetails, bio: e.target.value })} />
 
         {/* education */}
@@ -284,11 +413,13 @@ function Profile() {
 
 
         <div className="pt-4">
-          <button type="button" onClick={handleSubmit} className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-colors flex items-center gap-2">
+          <button type="button" onClick={handleUpdateUser} className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-colors flex items-center gap-2">
             <Save className="w-4 h-4" /> Save Changes
           </button>
         </div>
       </form>
+      <ToastContainer position='top-center' autoClose={3000} theme='colored' /> 
+
     </div>
   )
 }

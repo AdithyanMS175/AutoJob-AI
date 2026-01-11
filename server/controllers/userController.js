@@ -1,13 +1,11 @@
 const users = require("../models/userModel");
 const jwt = require(`jsonwebtoken`);
 
-
-
 //register
 exports.registerController = async (req, res) => {
   console.log("Inside registerController");
   const { email, password, role } = req.body;
-  console.log(email,password,role);
+  console.log(email, password, role);
   // res.status(200).json("Request Recieved")
 
   try {
@@ -23,7 +21,6 @@ exports.registerController = async (req, res) => {
     res.status(500).json(error);
   }
 };
-
 
 //login
 exports.loginController = async (req, res) => {
@@ -55,8 +52,8 @@ exports.loginController = async (req, res) => {
 exports.googleLoginController = async (req, res) => {
   console.log("Inside googleLogin");
 
-  const { email, password, username, picture,role } = req.body;
-  console.log(email, password, username, picture,role);
+  const { email, password, username, picture, role } = req.body;
+  console.log(email, password, username, picture, role);
 
   try {
     const existingUser = await users.findOne({ email });
@@ -72,7 +69,7 @@ exports.googleLoginController = async (req, res) => {
         email,
         password,
         picture,
-        role
+        role,
       });
 
       const token = jwt.sign(
@@ -81,6 +78,26 @@ exports.googleLoginController = async (req, res) => {
       );
       res.status(200).json({ user: newUser, token });
     }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+};
+
+//fetch user
+exports.getUserController = async (req, res) => {
+  try {
+    console.log("PARAM ID:", req.params.id);
+    console.log("PAYLOAD:", req.payload);
+    const { id } = req.params;
+
+    const user = await users.findById({ _id: id });
+
+    if (!user) {
+      return res.status(404).json("User not found");
+    }
+
+    res.status(200).json(user);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -98,8 +115,7 @@ const parseArray = (value) => {
   }
 };
 
-//use Edit Profile
-
+//user Edit Profile
 exports.userProfileUpdateController = async (req, res) => {
   console.log("Inside userProfilUpdateController");
 
@@ -118,7 +134,7 @@ exports.userProfileUpdateController = async (req, res) => {
     isVerified,
     phone,
     skills,
-    experience
+    experience,
   } = req.body;
 
   const updatePicture = req.file ? req.file.filename : picture;
@@ -156,12 +172,41 @@ exports.userProfileUpdateController = async (req, res) => {
         isVerified: isVerified === "true",
         phone,
         skills: parseArray(skills),
-        experience: parseArray(experience)
+        experience: parseArray(experience),
       },
       { new: true }
     );
 
     res.status(200).json(updateUser);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+};
+
+// user Upload Resume
+exports.userResumeUploadController = async (req, res) => {
+  console.log("Inside userResumeUploadController");
+
+  const email = req.payload;
+  const { id } = req.params;
+
+  if (!req.file) {
+    return res.status(400).json("Resume file is required");
+  }
+
+  const resume = req.file.filename;
+
+  console.log(id, email, resume);
+
+  try {
+    const updatedUser = await users.findByIdAndUpdate(
+      { _id: id },
+      { $push: { resumes: resume } },
+      { new: true }
+    );
+
+    res.status(200).json(updatedUser);
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
