@@ -1,0 +1,222 @@
+.container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+  }
+  
+  .chatButton {
+    background: #800080;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .chatButton:hover {
+    background: #800080;
+    transform: scale(1.1);
+  }
+  .chatIcon {
+    font-size: 28px; /* or whatever size you want */
+  }
+  .chatBox {
+    width: 400px;
+    height: 600px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+  
+  .header {
+    padding: 1rem;
+    background: #800080;
+    color: white;
+    border-radius: 15px 15px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .closeButton {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+
+  .linkhref{
+    text-decoration: none;
+    
+  }
+  
+  .messages {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    background: #f8fafc;
+  }
+  
+  .welcomeMessage {
+    color: #1e293b !important;
+    background: #e0f2fe;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .welcomeMessage ul {
+    padding-left: 1.5rem;
+    margin: 0.5rem 0;
+  }
+  
+  .message {
+    max-width: 80%;
+    padding: 0.8rem;
+    margin: 0.5rem 0;
+    border-radius: 1rem;
+    word-break: break-word;
+  }
+  
+  .user {
+    background: #800080;
+    color: white;
+    margin-left: auto;
+    border-radius: 1rem 1rem 0 1rem;
+  }
+  
+  .bot {
+    background: white;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+    margin-right: auto;
+    border-radius: 1rem 1rem 1rem 0;
+  }
+  
+  .inputArea {
+    display: flex;
+    padding: 1rem;
+    gap: 0.5rem;
+    border-top: 1px solid #e2e8f0;
+  }
+  
+  .inputArea input {
+    flex: 1;
+    padding: 0.8rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    outline: none;
+  }
+  
+  .inputArea button {
+    background: #800080;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.2rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .inputArea button:disabled {
+    background: #8f628f;
+    cursor: not-allowed;
+  }
+  
+  .loading {
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .dotFlashing {
+    position: relative;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #800080;
+    color: #800080;
+    animation: dotFlashing 1s infinite linear alternate;
+    animation-delay: 0.5s;
+  }
+  
+  .dotFlashing::before, .dotFlashing::after {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    top: 0;
+  }
+  
+  .dotFlashing::before {
+    left: -15px;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #800080;
+    color: #800080;
+    animation: dotFlashing 1s infinite alternate;
+    animation-delay: 0s;
+  }
+  
+  .dotFlashing::after {
+    left: 15px;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #800080;
+    color: #800080;
+    animation: dotFlashing 1s infinite alternate;
+    animation-delay: 1s;
+  }
+  
+  @keyframes dotFlashing {
+    0% { background-color: #800080; }
+    50%, 100% { background-color: #bfdbfe; }
+  }
+
+  /* Suggested Questions Styles */
+.suggestedQuestions {
+    padding: 10px;
+    margin: 10px;
+    background: #f5f5f5;
+    border-radius: 8px;
+  }
+  
+  .suggestedQuestions p {
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  
+  .questionGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+  }
+  
+  .questionChip {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+  }
+  
+  .questionChip:hover {
+    background: #e0e0e0;
+    transform: translateY(-2px);
+  }

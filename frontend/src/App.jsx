@@ -12,10 +12,11 @@ import RecruiterLayout from './recruiter/components/RecruiterLayout'
 import PostJob from './recruiter/pages/PostJob'
 import AIMatchBadge from './recruiter/components/AIMatchBadge'
 import ApplicantTable from './recruiter/components/ApplicationTable'
-import JobCard from './recruiter/components/JobCard'
+import JobCard from './recruiter/pages/JobCard'
 import StatusDropdown from './recruiter/components/StatusDropdown'
 import StatsWidget from './recruiter/components/StatsWidget'
 import AdminHome from './admin/pages/AdminHome'
+import MyJobs from './recruiter/pages/MyJobs'
 
 function App() {
 
@@ -38,6 +39,8 @@ function App() {
          <Route  path='post-job' element={<PostJob />} />
          <Route  path='aimatchbadge' element={<AIMatchBadge />} />
          <Route  path='applicationtable' element={<ApplicantTable />} />
+         <Route  path='my-jobs' element={<MyJobs  />} />
+
          <Route  path='jobcard' element={<JobCard />} />
          <Route  path='statusdropdown' element={<StatusDropdown />} />
          <Route  path='statuswidget' element={<StatsWidget />} />

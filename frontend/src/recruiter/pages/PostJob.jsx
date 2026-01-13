@@ -5,12 +5,14 @@ import { getStoredUser } from '../../services/userStorage';
 
 const PostJob = () => {
   const [jobDetails, setJobDetails] = useState({
-    title: '',
+    jobTitle: '',
     description: '',
     skills: '',
     location: '',
     salary: '',
-    recruiterId: ''
+    recruiterId: '',
+    category: '',
+    company:''
   });
 
   const handleChange = (e) => {
@@ -25,24 +27,21 @@ const PostJob = () => {
 
   const fetchUser = () => {
     const storedUser = getStoredUser();
-    console.log("storeduser", storedUser);
-
     if (storedUser) {
-      const user = storedUser;
-      setJobDetails({
-        recruiterId: user._id || "",
-      });
+      setJobDetails(prev => ({
+        ...prev,
+        recruiterId: storedUser._id
+      }));
     }
-  }
+  };
 
 
 
   const handlePostJob = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       const reqHeader = {
-        
         Authorization: `Bearer ${token}`
       };
 
@@ -65,6 +64,7 @@ const PostJob = () => {
           location: "",
           salary: "",
           category: "",
+          company:"",
           recruiterId: ""
         });
       }
@@ -88,7 +88,7 @@ const PostJob = () => {
           <label className="text-slate-300 font-medium">Job Title</label>
           <input
             type="text"
-            name="title"
+            name="jobTitle"
             placeholder="e.g. Senior MERN Developer"
             value={jobDetails.jobTitle}
             className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder-slate-600"
@@ -99,9 +99,20 @@ const PostJob = () => {
           <label className="text-slate-300 font-medium">Category</label>
           <input
             type="text"
-            name="title"
+            name="category"
             placeholder="e.g. Software Engineering"
             value={jobDetails.category}
+            className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder-slate-600"
+            onChange={handleChange}
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-slate-300 font-medium">Company</label>
+          <input
+            type="text"
+            name="company"
+            placeholder="google"
+            value={jobDetails.company}
             className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder-slate-600"
             onChange={handleChange}
           />
