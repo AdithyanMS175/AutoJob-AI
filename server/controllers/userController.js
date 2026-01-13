@@ -87,8 +87,8 @@ exports.googleLoginController = async (req, res) => {
 //fetch user
 exports.getUserController = async (req, res) => {
   try {
-    console.log("PARAM ID:", req.params.id);
-    console.log("PAYLOAD:", req.payload);
+    // console.log("PARAM ID:", req.params.id);
+    // console.log("PAYLOAD:", req.payload);
     const { id } = req.params;
 
     const user = await users.findById({ _id: id });
@@ -212,3 +212,4 @@ exports.userResumeUploadController = async (req, res) => {
     res.status(500).json(error);
   }
 };
+
