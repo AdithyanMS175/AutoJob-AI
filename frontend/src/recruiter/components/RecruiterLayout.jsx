@@ -5,11 +5,16 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 const RecruiterLayout = () => {
   const location = useLocation();
 
+  const handleLogout = () => {
+    sessionStorage.clear();
+    navigate("/login")
+  };
+
   const menuItems = [
     { name: 'Dashboard', path: '/recruiter/home', icon: <LayoutDashboard /> },
     { name: 'Post a Job', path: '/recruiter/post-job', icon: <ClipboardPlus /> },
     { name: 'My Jobs', path: '/recruiter/my-jobs', icon: <Briefcase /> },
-    { name: 'Applications', path: '/recruiter/applications', icon: <FileUser />},
+    
   ];
 
   return (
@@ -44,7 +49,7 @@ const RecruiterLayout = () => {
         </nav>
 
         <div className="p-4 border-t border-slate-800">
-          <button className="cursor-pointer flex items-center gap-3 px-4 py-2 text-slate-400 hover:text-red-400 transition-colors w-full">
+          <button onClick={handleLogout} className="cursor-pointer flex items-center gap-3 px-4 py-2 text-slate-400 hover:text-red-400 transition-colors w-full">
             <span><LogOut /></span> Logout
           </button>
         </div>

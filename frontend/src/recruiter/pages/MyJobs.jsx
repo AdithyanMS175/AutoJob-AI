@@ -31,15 +31,16 @@ const MyJobs = () => {
       setUserId(user._id)
 
     }
-    
-    
-    
-    
+
+  };
+
+  const handleJobDeleted = (jobId) => {
+    setJobs(prevJobs => prevJobs.filter(job => job._id !== jobId));
   };
 
   console.log(jobs);
   console.log(userId);
-  
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-white">My Job Posts</h2>
@@ -47,7 +48,7 @@ const MyJobs = () => {
       {jobs.length === 0 ? (
         <p className="text-slate-400">No jobs posted yet.</p>
       ) : (
-        jobs.map(job => <JobCard key={job._id} job={job} />)
+        jobs.map(job => <JobCard key={job._id} job={job} onJobDeleted={handleJobDeleted} />)
       )}
     </div>
   );

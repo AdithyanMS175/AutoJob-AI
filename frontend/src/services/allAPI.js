@@ -54,8 +54,28 @@ export const getMyJobsAPI = async (reqBody, reqHeader) => {
   return await commonAPI("POST",`${serverURL}/recruiter/my-jobs`,reqBody,reqHeader);
 };
 
+//recruiter get applicants for each job
+export const getJobApplicants = async (jobId, reqBody,reqHeader) => {
+  return await commonAPI("POST",`${serverURL}/recruiter/applicants/${jobId}`,reqBody,reqHeader);
+};
+
+//recruiter delete job 
+export const deleteJobAPI = async (jobId, reqBody, reqHeader) => {
+  return await commonAPI("DELETE",`${serverURL}/recruiter/job/${jobId}`,reqBody,reqHeader);
+};
+
+
+export const deleteApplicationAPI = async (applicationId,reqBody,reqHeader) => {
+  return await commonAPI("DELETE",`${serverURL}/recruiter/application/${applicationId}`,reqBody,reqHeader);
+};
+
 // chatbot api
 export const chatBotAPI = async (reqBody) => {
   return await commonAPI("POST",`${serverURL}/api/chat`,reqBody,{ "Content-Type": "application/json" });
+};
+
+//candidate apply job
+export const applyJobAPI = async (reqBody, reqHeader) => {
+  return await commonAPI("POST",`${serverURL}/application/apply`,reqBody,reqHeader);
 };
 

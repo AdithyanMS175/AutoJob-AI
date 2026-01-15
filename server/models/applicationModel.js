@@ -6,12 +6,17 @@ const { model } = mongoose;
 const applicationSchema = new Schema({
   jobId: {
     type: Schema.Types.ObjectId,
-    ref: "job",
+    ref: "jobs",
     required: true,
   },
   userId: {
     type: Schema.Types.ObjectId,
-    ref: "user",
+    ref: "users",
+    required: true,
+  },
+  recruiterId: {
+    type: Schema.Types.ObjectId,
+    ref: "users",
     required: true,
   },
   resume: String,
@@ -23,7 +28,7 @@ const applicationSchema = new Schema({
 }, { timestamps: true });
 
 
-const applications = model("jobs", applicationSchema);
+const applications = model("applications", applicationSchema);
 
 module.exports = applications;
 

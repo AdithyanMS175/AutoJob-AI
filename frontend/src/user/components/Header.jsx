@@ -1,11 +1,24 @@
 import { LogOut, Settings, Sparkles, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
 
 function Header() {
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [user, setUser] = useState()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+
+    const storedUser = sessionStorage.getItem("user");
+    setUser(JSON.parse(storedUser))
+  }, [])
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    navigate("/login")
+  };
 
 
   return (
@@ -27,8 +40,18 @@ function Header() {
           onClick={() => setIsProfileOpen(!isProfileOpen)}
           className="flex cursor-pointer items-center gap-2 hover:bg-white/5 px-3 py-2 rounded-full transition-all border border-transparent hover:border-white/10"
         >
-          <div className="w-8 h-8 rounded-full bg-linear-to-br from-gray-700 to-gray-900 flex items-center justify-center border border-white/20">
-            <User className="w-4 h-4 text-gray-300" />
+          <div className="w-8 h-8 rounded-full overflow-hidden border border-white/20">
+            {user?.picture ? (
+              <img
+                src={`http://localhost:3000/uploads/${user.picture}`}
+                alt={user.username}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-linear-to-br from-gray-700 to-gray-900 flex items-center justify-center">
+                <User className="w-4 h-4 text-gray-300" />
+              </div>
+            )}
           </div>
         </button>
 
@@ -41,8 +64,12 @@ function Header() {
               className="absolute right-0 mt-2 w-48 bg-[#111] border border-white/10 rounded-xl shadow-2xl shadow-purple-900/20 overflow-hidden"
             >
               <div className="px-4 py-3 border-b border-white/10">
-                <p className="text-sm text-white font-medium">John Doe</p>
-                <p className="text-xs text-gray-400">MERN Developer</p>
+                <p className="text-sm text-white font-medium">
+                  {user?.username || "User"}
+                </p>
+                <p className="text-xs text-gray-400">
+                  {user?.jobTitle || user?.role || "—"}
+                </p>
               </div>
               <ul className="py-1">
                 <Link to={'/user/settings'}>
@@ -52,7 +79,10 @@ function Header() {
                   </li>
 
                 </Link>
-                <li className="px-4 py-2 hover:bg-red-500/10 cursor-pointer flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors">
+                <li
+                  onClick={handleLogout}
+                  className="px-4 py-2 hover:bg-red-500/10 cursor-pointer flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors"
+                >
                   <LogOut className="w-4 h-4" /> Logout
                 </li>
               </ul>
