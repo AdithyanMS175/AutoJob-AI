@@ -43,7 +43,6 @@ export const userAllJobs = async (reqHeader) => {
   return await commonAPI("GET",`${serverURL}/candidate/jobs`,{},reqHeader);
 };
 
-
 //add job
 export const addJobAPI = async (reqBody,reqHeader) => {
     return await commonAPI("POST",`${serverURL}/user/add/job`,reqBody,reqHeader)
@@ -64,9 +63,13 @@ export const deleteJobAPI = async (jobId, reqBody, reqHeader) => {
   return await commonAPI("DELETE",`${serverURL}/recruiter/job/${jobId}`,reqBody,reqHeader);
 };
 
-
+//recruiter delete application  
 export const deleteApplicationAPI = async (applicationId,reqBody,reqHeader) => {
   return await commonAPI("DELETE",`${serverURL}/recruiter/application/${applicationId}`,reqBody,reqHeader);
+};
+//recruiter dashboard counts and and list first few applicants to that recruiter 
+export const recruiterDashboardAPI = async (reqBody,reqHeader) => {
+  return await commonAPI("POST",`${serverURL}/recruiter/dashboard`,reqBody,reqHeader);
 };
 
 // chatbot api
@@ -78,4 +81,22 @@ export const chatBotAPI = async (reqBody) => {
 export const applyJobAPI = async (reqBody, reqHeader) => {
   return await commonAPI("POST",`${serverURL}/application/apply`,reqBody,reqHeader);
 };
+
+//admin dashboard 
+export const adminDashboardAPI = async (reqHeader) => {
+  return await commonAPI("GET",`${serverURL}/admin/dashboard`,"",reqHeader);
+};
+
+//admin all users 
+export const adminGetUsersAPI = async (reqHeader) => {
+  return await commonAPI("GET", `${serverURL}/admin/users`, "", reqHeader);
+};
+
+//admin users delete
+export const adminDeleteUserAPI = async (userId, reqHeader) => {
+  return await commonAPI("DELETE",`${serverURL}/admin/user/${userId}`,"",reqHeader);
+};
+
+
+
 

@@ -176,7 +176,7 @@ const Auth = ({ registerURL }) => {
           }
         }, 2500)
       } else if (result.status == 401 || result.status == 404) {
-        toast.warning(result.response.data)
+        toast.warning(result.data)
         setUserDetails({ email: "", password: "" })
       } else {
         toast.error("Something Went Wrong");
@@ -185,9 +185,6 @@ const Auth = ({ registerURL }) => {
     } else {
       toast.warning("Please fill the form completely")
     }
-
-
-
 
   }
 
@@ -228,14 +225,6 @@ const Auth = ({ registerURL }) => {
   }
 
   
-
-
-
-
-
-
-
-
 
   return (
 

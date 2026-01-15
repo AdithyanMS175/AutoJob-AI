@@ -13,7 +13,7 @@ const jwtMiddleware = (req,res,next) =>{
             console.log(jwtResponse);
             req.payload = jwtResponse.userMail 
             next()
-            
+            console.log("Admin Authorization Success")
         }catch(err){
             console.log(err);
             res.status(401).json("Authorization failed!!! Invalid Token...")

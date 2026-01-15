@@ -1,3 +1,5 @@
+const applications = require("../models/applicationModel");
+const jobs = require("../models/jobModel");
 const users = require("../models/userModel");
 const jwt = require(`jsonwebtoken`);
 
@@ -212,4 +214,170 @@ exports.userResumeUploadController = async (req, res) => {
     res.status(500).json(error);
   }
 };
+
+//recruiter dashboard controller
+exports.recruiterDashboardController = async (req, res) => {
+  try {
+    
+    const { recruiterId } = req.body;
+
+    // 1️⃣ Recruiter jobs
+    const recruiterJobs = await jobs.find({ recruiterId }).select("_id jobTitle");
+
+    const jobIds = recruiterJobs.map(job => job._id);
+
+    // 2️⃣ Total applications
+    const totalApplications = await applications.countDocuments({
+      jobId: { $in: jobIds }
+    });
+
+    // 3️⃣ AI shortlisted (example condition)
+    const shortlisted = await applications.countDocuments({
+      jobId: { $in: jobIds },
+      aiScore: { $gte: 80 }
+    });
+
+    // 4️⃣ Recent applications
+    const recentApplications = await applications.find({
+      jobId: { $in: jobIds }
+    })
+      .populate("userId", "username")
+      .populate("jobId", "jobTitle")
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select("userId jobId aiScore createdAt");
+
+    res.status(200).json({
+      stats: {
+        totalJobs: recruiterJobs.length,
+        totalApplications,
+        shortlisted
+      },
+      recentApplications
+    });
+
+  } catch (err) {
+    console.error("Recruiter dashboard error:", err);
+    res.status(500).json(err);
+  }
+};
+
+// admin dashboard controller
+
+exports.adminDashboardController = async (req, res) => {
+  try {
+    // 📊 Stats
+    const totalJobs = await jobs.countDocuments();
+    const totalUsers = await users.countDocuments();
+    const aiApplications = await applications.countDocuments({
+      aiScore: { $gte: 1 }
+    });
+
+    const conversionRate = totalJobs
+      ? ((aiApplications / totalJobs) * 100).toFixed(1)
+      : 0;
+
+    // 📈 Application trend (last 7 days)
+    const appTrend = await applications.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $dayOfWeek: "$createdAt" },
+          applications: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // 📈 Job trend (last 7 days)
+    const jobTrend = await jobs.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $dayOfWeek: "$createdAt" },
+          jobs: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // 🕒 Recent activity
+    const recentLogs = await applications
+      .find()
+      .populate("userId", "username")
+      .populate("jobId", "jobTitle")
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    res.status(200).json({
+      stats: {
+        totalJobs,
+        totalUsers,
+        aiApplications,
+        conversionRate
+      },
+      trends: {
+        applications: appTrend,
+        jobs: jobTrend
+      },
+      recentLogs
+    });
+  } catch (err) {
+    console.error("Admin dashboard error:", err);
+    res.status(500).json(err);
+  }
+};
+
+//admin all User view Controller
+exports.getAllUsersController = async (req, res) => {
+  try {
+    const allUsers = await users.find({ role: { $ne: "admin" } });
+    res.status(200).json(allUsers);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+//admin delete user Controller
+exports.deleteUserController = async (req, res) => {
+  try {
+    console.log("deleteUserController")
+    const { id } = req.params;
+    console.log(id);
+
+    
+    const user = await users.findById(id);
+    if (!user) return res.status(404).json("User not found");
+
+    // cleanup
+    if (user.role === "recruiter") {
+      const recruiterJobs = await jobs.find({ recruiterId: id });
+      const jobIds = recruiterJobs.map(j => j._id);
+
+      await applications.deleteMany({ jobId: { $in: jobIds } });
+      await jobs.deleteMany({ recruiterId: id });
+    }
+
+    if (user.role === "candidate") {
+      await applications.deleteMany({ id });
+    }
+
+    await users.findByIdAndDelete(id);
+
+    res.status(200).json("User deleted successfully");
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
 

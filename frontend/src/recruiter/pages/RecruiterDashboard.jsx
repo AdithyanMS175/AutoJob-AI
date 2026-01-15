@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { recruiterDashboardAPI } from '../../services/allAPI';
+import { useNavigate } from 'react-router-dom';
+import ChatBot from '../../user/components/ChatBot/ChatBot/ChatBot';
 
 const StatCard = ({ title, count, trend }) => (
   <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 hover:border-purple-500/50 transition-all duration-300 shadow-lg">
@@ -14,18 +17,60 @@ const StatCard = ({ title, count, trend }) => (
 
 const RecruiterDashboard = () => {
 
+  const navigate = useNavigate()
+  const [stats, setStats] = useState(null);
+  const [recentApps, setRecentApps] = useState([]);
 
-  
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
+
+  const fetchDashboard = async () => {
+    const token = sessionStorage.getItem("token");
+    const userrStorage = sessionStorage.getItem("user")
+    const user = JSON.parse(userrStorage);
+    const id = user._id
+
+    const reqBody = {
+      recruiterId: id,
+    };
+
+    const reqHeader = {
+      Authorization: `Bearer ${token}`
+    };
+
+    const result = await recruiterDashboardAPI(reqBody,reqHeader);
+
+    if (result.status === 200) {
+      setStats(result.data.stats);
+      setRecentApps(result.data.recentApplications);
+    }
+  };
+
+
+
   return (
     <div className="space-y-8">
       {/* Header */}
-      
+
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard title="Total Active Jobs" count="12" trend="+2 this week" />
-        <StatCard title="Total Applications" count="1,245" trend="+15% vs last month" />
-        <StatCard title="AI Shortlisted" count="85" trend="High Match Rate" />
+        <StatCard
+          title="Total Active Jobs"
+          count={stats?.totalJobs || 0}
+          trend="Live"
+        />
+        <StatCard
+          title="Total Applications"
+          count={stats?.totalApplications || 0}
+          trend="All time"
+        />
+        <StatCard
+          title="AI Shortlisted"
+          count={stats?.shortlisted || 0}
+          trend="High match"
+        />
       </div>
 
       {/* Recent Activity Section */}
@@ -43,18 +88,29 @@ const RecruiterDashboard = () => {
               </tr>
             </thead>
             <tbody className="text-slate-300">
-              {[1, 2, 3].map((i) => (
-                <tr key={i} className="border-b border-slate-800/50 hover:bg-slate-800/50 transition-colors">
-                  <td className="py-3 px-4 font-medium">Adithyan M S</td>
-                  <td className="py-3 px-4">MERN Stack Developer</td>
+              {recentApps.map(app => (
+                <tr
+                  key={app._id}
+                  className="border-b border-slate-800/50 hover:bg-slate-800/50"
+                >
+                  <td className="py-3 px-4 font-medium">
+                    {app.userId.username}
+                  </td>
+                  <td className="py-3 px-4">
+                    {app.jobId.jobTitle}
+                  </td>
                   <td className="py-3 px-4">
                     <span className="text-purple-400 font-bold bg-purple-400/10 px-2 py-1 rounded border border-purple-500/20">
-                      92%
+                      {app.aiScore}%
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-slate-500">Dec 26, 2025</td>
+                  <td className="py-3 px-4 text-slate-500">
+                    {new Date(app.createdAt).toLocaleDateString()}
+                  </td>
                   <td className="py-3 px-4">
-                    <button className="text-sm text-purple-400 hover:text-purple-300 hover:underline">View</button>
+                    <button onClick={()=>navigate('/recruiter/my-jobs')} className="text-sm text-purple-400 hover:underline">
+                      View
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -62,6 +118,7 @@ const RecruiterDashboard = () => {
           </table>
         </div>
       </div>
+      <ChatBot/>
     </div>
   );
 };

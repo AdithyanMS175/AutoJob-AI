@@ -17,6 +17,8 @@ import StatusDropdown from './recruiter/components/StatusDropdown'
 import StatsWidget from './recruiter/components/StatsWidget'
 import AdminHome from './admin/pages/AdminHome'
 import MyJobs from './recruiter/pages/MyJobs'
+import AdminLayout from './admin/components/AdminLayout'
+import AdminUsers from './admin/pages/AdminAllUserPage'
 
 function App() {
 
@@ -35,20 +37,25 @@ function App() {
 
         {/* recruiter  */}
         <Route path='/recruiter' element={<RecruiterLayout />} >
-         <Route  path='home' element={<RecruiterDashboard />} />
-         <Route  path='post-job' element={<PostJob />} />
-         <Route  path='aimatchbadge' element={<AIMatchBadge />} />
-         <Route  path='applicationtable' element={<ApplicantTable />} />
-         <Route  path='my-jobs' element={<MyJobs  />} />
+          <Route path='home' element={<RecruiterDashboard />} />
+          <Route path='post-job' element={<PostJob />} />
+          <Route path='aimatchbadge' element={<AIMatchBadge />} />
+          <Route path='applicationtable' element={<ApplicantTable />} />
+          <Route path='my-jobs' element={<MyJobs />} />
 
-         <Route  path='jobcard' element={<JobCard />} />
-         <Route  path='statusdropdown' element={<StatusDropdown />} />
-         <Route  path='statuswidget' element={<StatsWidget />} />
+          <Route path='jobcard' element={<JobCard />} />
+          <Route path='statusdropdown' element={<StatusDropdown />} />
+          <Route path='statuswidget' element={<StatsWidget />} />
 
         </Route>
 
-        <Route path='/admin/home' element={<AdminHome/>}/>
-        
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminHome />} />       
+          <Route path="home" element={<AdminHome />} />  
+          <Route path="users" element={<AdminUsers />} />
+        </Route>
+
+
 
 
 

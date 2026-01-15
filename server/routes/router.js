@@ -6,6 +6,7 @@ const multerMiddleware = require('../middlewares/multerMiddlewares');
 const resumeMulter = require('../middlewares/resumeMulter');
 const jobController = require('../controllers/jobController');
 const chatController  = require('../controllers/chatController');
+const adminMiddleware = require('../middlewares/adminMiddleware');
 
 const router = new express.Router()
 
@@ -47,7 +48,21 @@ router.delete("/recruiter/job/:jobId",jwtMiddleware,jobController.deleteJobContr
 // recruiter delete a specific application
 router.delete("/recruiter/application/:applicationId",jwtMiddleware,applicationController.deleteApplicationController);
 
+//recruiter dashboard 
+router.post(
+  "/recruiter/dashboard",
+  jwtMiddleware,
+  userController.recruiterDashboardController
+);
+
 // chatbot route
 router.post("/api/chat", chatController.chatController);
+
+//admin dashboard
+router.get("/admin/dashboard",adminMiddleware,userController.adminDashboardController);
+
+router.get("/admin/users",adminMiddleware,userController.getAllUsersController);
+
+router.delete("/admin/user/:id",adminMiddleware,userController.deleteUserController);
 
 module.exports = router

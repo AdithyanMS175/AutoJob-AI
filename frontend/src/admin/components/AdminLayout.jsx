@@ -2,6 +2,7 @@ import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import Sidebar from './Sidebar';
+import { Outlet } from 'react-router-dom';
 
 const AdminLayout = ({ children }) => {
   return (
@@ -19,7 +20,7 @@ const AdminLayout = ({ children }) => {
         <Header />
         
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent">
-          {children}
+           <Outlet />
         </main>
         
         <Footer />

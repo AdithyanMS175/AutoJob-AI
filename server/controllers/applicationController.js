@@ -38,7 +38,7 @@ exports.recruiterJobApplicantsController = async (req, res) => {
 
     res.status(200).json(authorizedApplicants);
   } catch (err) {
-  console.error("❌ recruiterJobApplicantsController error:", err);
+  console.error("recruiterJobApplicantsController error:", err);
   res.status(500).json({ message: err.message });
 }
 };
@@ -73,3 +73,13 @@ exports.deleteApplicationController = async (req, res) => {
     res.status(500).json(err);
   }
 };
+
+
+
+
+
+
+
+
+
+

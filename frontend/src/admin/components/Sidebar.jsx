@@ -8,11 +8,16 @@ const Sidebar = () => {
 	const location = useLocation();
 
 	const SIDEBAR_ITEMS = [
-		{ name: "Dashboard", icon: BarChart2, color: "#6366f1", href: "/admin" },
+		{ name: "Dashboard", icon: BarChart2, color: "#6366f1", href: "/admin/home" },
 		{ name: "Manage Jobs", icon: Briefcase, color: "#8B5CF6", href: "/admin/jobs" },
 		{ name: "Candidates", icon: Users, color: "#EC4899", href: "/admin/users" },
 		{ name: "Settings", icon: Settings, color: "#10B981", href: "/admin/settings" },
 	];
+
+	const handleLogout = () => {
+    sessionStorage.clear();
+    navigate("/login");
+  };
 
 	return (
 		<div className="relative z-10 transition-all duration-300 ease-in-out shrink-0">
@@ -76,6 +81,7 @@ const Sidebar = () => {
 				<div className="mt-auto border-t border-gray-800 pt-4">
 					<motion.button
 						whileHover={{ scale: 1.02 }}
+						onClick={handleLogout}
 						className="w-full flex items-center p-3 text-red-400 hover:bg-gray-800 hover:text-red-300 rounded-xl transition-colors"
 					>
 						<LogOut size={20} />

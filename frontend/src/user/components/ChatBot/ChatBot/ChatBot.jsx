@@ -75,7 +75,7 @@ const ChatBot = () => {
             {/* HEADER */}
             <div className="bg-purple-700 text-black px-4 py-3 flex justify-between items-center">
               <h3 className="font-semibold text-sm">
-                No-Code AI Support Assistant
+                Auto Job AI Support Assistant
               </h3>
               <button onClick={() => setIsOpen(false)}>
                 <FaTimes />
@@ -90,7 +90,7 @@ const ChatBot = () => {
                 <ul className="list-disc ml-5 space-y-1">
                   <li>Technical issues</li>
                   <li>Feature explanations</li>
-                  <li>No-code guidance</li>
+                  <li>AutoJob AI guidance</li>
                   <Link to="/user/Complaint" className="text-purple-600 underline">
                     Report an issue
                   </Link>

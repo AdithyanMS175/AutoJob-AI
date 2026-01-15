@@ -1,9 +1,10 @@
 import { Briefcase, ClipboardPlus, FileUser, LayoutDashboard, LogOut } from 'lucide-react';
 import React from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const RecruiterLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     sessionStorage.clear();
