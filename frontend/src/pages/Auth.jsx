@@ -343,7 +343,7 @@ const Auth = ({ registerURL }) => {
                     onError={() => {
                       console.log('Login Failed');
                     }}
-                  />;
+                  />
                 </button>
                 <button className="cursor-pointer flex justify-center items-center py-2.5 bg-zinc-800/50 rounded-xl hover:bg-zinc-800 transition-colors border border-zinc-700/50 text-[#1877F2]">
                   <FaFacebook size={20} />
@@ -357,7 +357,7 @@ const Auth = ({ registerURL }) => {
                 {registerURL ? "Already have an account?" : "Don't have an account?"}{' '}
                 <button
                   onClick={toggle}
-                  className="text-orange-500 hover:text-orange-400 font-semibold ml-1 transition-colors cursor-pointer bg-white"
+                  className="text-orange-500 hover:text-orange-400 font-semibold ml-1 transition-colors cursor-pointer "
                 >
                   {registerURL ? 'login' : 'Sign Up'}
                 </button>
@@ -393,7 +393,7 @@ const Auth = ({ registerURL }) => {
 
             <div className="bg-zinc-800/60 p-6 lg:p-8 rounded-3xl backdrop-blur-xl border border-zinc-700/30 shadow-2xl">
               <p className="text-lg md:text-xl font-medium leading-relaxed mb-6 text-zinc-100">
-                "Aceternity Pro Components have completely changed how we work. What used to take
+                "Auto Job AI have completely changed how we work. What used to take
                 hours every week is now fully automated."
               </p>
               <div>

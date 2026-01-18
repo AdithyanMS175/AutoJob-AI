@@ -88,7 +88,7 @@ exports.userAllJobsController = async (req, res) => {
   }
 };
 
-
+//recruiter delete my job
 exports.deleteJobController = async (req, res) => {
   try {
     const { jobId } = req.params;

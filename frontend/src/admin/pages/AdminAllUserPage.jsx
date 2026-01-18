@@ -24,6 +24,8 @@ const AdminUsers = () => {
     if (result.status === 200) setUsers(result.data);
   };
 
+  console.log(users)
+
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this user permanently?")) return;
 
@@ -82,7 +84,7 @@ const AdminUsers = () => {
               <tr>
                 <th className="p-4">Name</th>
                 <th>Email</th>
-                <th>Joined</th>
+                <th>SubScription</th>
                 <th className="text-right p-4">Actions</th>
               </tr>
             </thead>
@@ -92,7 +94,7 @@ const AdminUsers = () => {
                   <td className="p-4 text-white">{user.username}</td>
                   <td className="text-gray-400">{user.email}</td>
                   <td className="text-gray-500">
-                    {new Date(user.createdAt).toLocaleDateString()}
+                    {user?.isVerified == "true"? "Purchased" : "No"}
                   </td>
                   <td className="p-4 flex justify-end gap-4">
                     <Eye

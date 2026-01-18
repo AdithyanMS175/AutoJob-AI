@@ -1,4 +1,4 @@
-import { Briefcase, ClipboardPlus, FileUser, LayoutDashboard, LogOut } from 'lucide-react';
+import { Briefcase, ClipboardPlus, FileUser, LayoutDashboard, LogOut, User } from 'lucide-react';
 import React from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
@@ -15,6 +15,7 @@ const RecruiterLayout = () => {
     { name: 'Dashboard', path: '/recruiter/home', icon: <LayoutDashboard /> },
     { name: 'Post a Job', path: '/recruiter/post-job', icon: <ClipboardPlus /> },
     { name: 'My Jobs', path: '/recruiter/my-jobs', icon: <Briefcase /> },
+    { name: 'My Profile', path: '/recruiter/my-profile', icon: <User /> },
     
   ];
 

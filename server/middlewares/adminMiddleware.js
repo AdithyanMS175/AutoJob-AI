@@ -14,6 +14,7 @@ const adminMiddleware = (req, res, next) => {
       req.payload = jwtResponse.userMail;
       const role = jwtResponse.role;
       if (role == "admin") {
+        console.log("Admin Success")
         next();
       } else {
         res.status(401).json("Authorization failed!!! Unauthorized user... ");

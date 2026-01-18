@@ -19,6 +19,10 @@ import AdminHome from './admin/pages/AdminHome'
 import MyJobs from './recruiter/pages/MyJobs'
 import AdminLayout from './admin/components/AdminLayout'
 import AdminUsers from './admin/pages/AdminAllUserPage'
+import AdminManageJobs from './admin/pages/AdminManageJobs'
+import RecruiterProfile from './recruiter/pages/RecruiterProfile'
+import PaymentSuccess from './user/pages/BillingSuccess'
+import PaymentFailure from './user/pages/BillingFailure'
 
 function App() {
 
@@ -34,6 +38,8 @@ function App() {
         <Route path='/user/home' element={<Home />} />
         <Route path='/user/profile' element={<Profile />} />
         <Route path='/user/settings' element={<Settings />} />
+        <Route path="/billing/success" element={<PaymentSuccess />} />
+        <Route path="/billing/cancel" element={<PaymentFailure />} />
 
         {/* recruiter  */}
         <Route path='/recruiter' element={<RecruiterLayout />} >
@@ -42,6 +48,7 @@ function App() {
           <Route path='aimatchbadge' element={<AIMatchBadge />} />
           <Route path='applicationtable' element={<ApplicantTable />} />
           <Route path='my-jobs' element={<MyJobs />} />
+          <Route path='my-profile' element={<RecruiterProfile />} />
 
           <Route path='jobcard' element={<JobCard />} />
           <Route path='statusdropdown' element={<StatusDropdown />} />
@@ -50,9 +57,10 @@ function App() {
         </Route>
 
         <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminHome />} />       
-          <Route path="home" element={<AdminHome />} />  
+          <Route index element={<AdminHome />} />
+          <Route path="home" element={<AdminHome />} />
           <Route path="users" element={<AdminUsers />} />
+          <Route path="jobs" element={<AdminManageJobs />} />
         </Route>
 
 

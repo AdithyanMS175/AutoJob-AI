@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BarChart2, Users, Settings, Briefcase, Menu, X, LogOut } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 const Sidebar = () => {
 	const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+	const navigate = useNavigate();
 	const location = useLocation();
 
 	const SIDEBAR_ITEMS = [

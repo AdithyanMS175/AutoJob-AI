@@ -3,7 +3,7 @@ import AdminLayout from "../components/AdminLayout";
 import { motion } from "framer-motion";
 import { BarChart2, Users, Briefcase, Zap, TrendingUp } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
-import { adminDashboardAPI } from "../../services/allAPI";
+import { adminDashboardAPI, adminDownloadReportAPI } from "../../services/allAPI";
 
 // Mock Data for Charts
 // const data = [
@@ -86,6 +86,29 @@ const AdminHome = () => {
 		}));
 	};
 
+	const handleDownloadReport = async () => {
+		const token = sessionStorage.getItem("token");
+
+		const reqHeader = {
+			Authorization: `Bearer ${token}`,
+		};
+
+		const res = await adminDownloadReportAPI(reqHeader);
+
+		if (res.status === 200) {
+			const blob = new Blob([res.data], { type: "text/csv" });
+			const url = window.URL.createObjectURL(blob);
+
+			const link = document.createElement("a");
+			link.href = url;
+			link.download = "admin-dashboard-report.csv";
+			document.body.appendChild(link);
+			link.click();
+
+			link.remove();
+			window.URL.revokeObjectURL(url);
+		}
+	};
 
 
 	return (
@@ -103,6 +126,7 @@ const AdminHome = () => {
 					</div>
 					<motion.button
 						whileHover={{ scale: 1.05 }}
+						onClick={handleDownloadReport}
 						className="bg-blue-600 px-4 py-2 rounded-lg text-white font-semibold shadow-lg hover:bg-blue-500 transition"
 					>
 						Download Report

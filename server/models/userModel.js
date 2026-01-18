@@ -41,7 +41,7 @@ const userSchema = new Schema({
     {
       company: String,
       role: String,
-      years: Number,
+      years: String,
       description: String,
     },
   ],
@@ -50,7 +50,7 @@ const userSchema = new Schema({
     {
       degree: String,
       institution: String,
-      year: Number,
+      year: String,
     },
   ],
 

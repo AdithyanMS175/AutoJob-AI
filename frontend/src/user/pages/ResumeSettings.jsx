@@ -1,17 +1,26 @@
 import { Upload } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { getUserAPI, uploadResumeAPI } from '../../services/allAPI';
+import { autoFillProfileAPI, getUserAPI, uploadResumeAPI } from '../../services/allAPI';
 import { toast, ToastContainer } from 'react-toastify';
 import { getStoredUser } from '../../services/userStorage';
+import * as pdfjsLib from "pdfjs-dist";
+import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
+import { extractPdfText } from '../utils/extractPdfText';
+
+
+
+
+
+
+
 
 function ResumeSettings() {
-
-
-
     const [userDetails, setUserDetails] = useState({
         id: "",
         resumes: []
     });
+    const [autoFillLoading, setAutoFillLoading] = useState(false);
+    const [resumeText, setResumeText] = useState("");
 
     useEffect(() => {
         fetchUser();
@@ -23,7 +32,7 @@ function ResumeSettings() {
         const storedUser = getStoredUser();
         const id = storedUser._id;
         // console.log(token,id);
-        
+
 
         if (!token || !storedUser) return;
 
@@ -42,7 +51,7 @@ function ResumeSettings() {
             });
         }
     };
-    console.log(userDetails);
+    // console.log(userDetails);
 
 
     const handleResumeUpload = async (e) => {
@@ -64,6 +73,14 @@ function ResumeSettings() {
         if (file.size > 10 * 1024 * 1024) {
             toast.warning("Resume must be under 10MB");
             return;
+        }
+
+        // Extract PDF text BEFORE upload
+        if (file.type === "application/pdf") {
+            const extractedText = await extractPdfText(file);
+            console.log("📄 Extracted Resume Text:", extractedText);
+            setResumeText(extractedText);
+            sessionStorage.setItem("resumeText", extractedText);
         }
 
         const token = sessionStorage.getItem("token");
@@ -99,6 +116,7 @@ function ResumeSettings() {
 
             // refresh local state
             fetchUser();
+            confirmAutoFill();
         } else {
             console.log(result);
             toast.error("Resume upload failed");
@@ -106,6 +124,60 @@ function ResumeSettings() {
     };
 
 
+    const handleAutoFillProfile = async () => {
+        try {
+            setAutoFillLoading(true);
+             const storedResumeText = sessionStorage.getItem("resumeText");
+            console.log(storedResumeText);
+
+            if (!storedResumeText) {
+            toast.error("Resume text not found. Please re-upload resume.");
+            return;
+        }
+
+
+            const token = sessionStorage.getItem("token");
+            if (!token) return;
+
+            const reqHeader = {
+                Authorization: `Bearer ${token}`
+            };
+
+            const reqBody = {
+            resumeText: storedResumeText
+        };
+
+            const result = await autoFillProfileAPI(reqBody, reqHeader);
+
+            if (result.status === 200) {
+                sessionStorage.setItem("user", JSON.stringify(result.data));
+                toast.success("Profile auto-filled from resume");
+
+            }
+        } catch {
+            toast.error("Auto-fill failed");
+        } finally {
+            setAutoFillLoading(false);
+        }
+    };
+
+
+    const confirmAutoFill = () => {
+        toast.info(
+            <div>
+                <p>Do you want to auto-fill your profile using this resume?</p>
+                <div className="flex gap-2 mt-2">
+                    <button
+                        onClick={handleAutoFillProfile}
+                        className="bg-green-600 px-3 py-1 rounded"
+                    >
+                        Yes
+                    </button>
+                </div>
+            </div>,
+            { autoClose: false }
+        );
+    };
 
 
     return (
@@ -156,7 +228,19 @@ function ResumeSettings() {
                             </a>
                         </div>
                     ))}
+
+
                 </div>
+            )}
+
+            {userDetails.resumes.length > 0 && (
+                <button
+                    onClick={handleAutoFillProfile}
+                    disabled={autoFillLoading}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-medium transition-colors"
+                >
+                    {autoFillLoading ? "Auto-Filling Profile..." : "Auto-Fill Profile Using Resume"}
+                </button>
             )}
 
             <div className="space-y-4">

@@ -10,7 +10,8 @@ import {
     Upload,
     Save,
     Mail,
-    ChevronRight
+    ChevronRight,
+    House
 } from 'lucide-react';
 import Profile from './Profile';
 import BillingSection from './BillingSection';
@@ -18,6 +19,7 @@ import SupportSection from './SupportSection';
 import ResumeSettings from './ResumeSettings';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import ChatBot from '../components/ChatBot/ChatBot/ChatBot';
 
 // --- SECTIONS CONFIGURATION ---
 const MENU_ITEMS = [
@@ -32,14 +34,26 @@ const Settings = () => {
 
     const [activeTab, setActiveTab] = useState('profile');
     const navigate = useNavigate();
+    const [user,setUser] = useState()
+
+    useState(()=>{
+        const user = sessionStorage.getItem("user");
+        setUser(JSON.parse(user));
+
+    },[])
 
     const Logout = () => {
         sessionStorage.clear("user")
         sessionStorage.clear("token")
         navigate('/login')
         toast.success("Logged Out Successfully");
-        
+
     }
+
+    const handleHome = () => {
+        navigate('/user/home')
+    }
+    
 
 
 
@@ -47,9 +61,10 @@ const Settings = () => {
     return (
         <div className="flex h-screen bg-[#0a0a0a] text-gray-100 font-sans overflow-hidden">
 
-           
+
             <aside className="w-64 lg:w-72 bg-[#111] border-r border-white/5 flex flex-col">
                 <div className="p-8">
+                    <House className="mb-3 hover:text-purple-400 cursor-pointer" onClick={handleHome} />
                     <h2 className="text-2xl font-bold text-white mb-1">Settings</h2>
                     <p className="text-sm text-gray-500">Manage your account</p>
                 </div>
@@ -63,8 +78,8 @@ const Settings = () => {
                                 key={item.id}
                                 onClick={() => setActiveTab(item.id)}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative ${isActive
-                                        ? 'bg-purple-600/10 text-purple-400'
-                                        : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                    ? 'bg-purple-600/10 text-purple-400'
+                                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
                                     }`}
                             >
                                 {isActive && (
@@ -87,7 +102,7 @@ const Settings = () => {
                 </div>
             </aside>
 
-          
+
             <main className="flex-1 overflow-y-auto p-8 lg:p-12">
                 <div className="max-w-3xl mx-auto">
                     <AnimatePresence mode="wait">
@@ -99,6 +114,10 @@ const Settings = () => {
                             transition={{ duration: 0.2 }}
                         >
                             <ContentSection type={activeTab} />
+                            {user?.isVerified && 
+                            <ChatBot />
+                            }
+                        
                         </motion.div>
                     </AnimatePresence>
                 </div>

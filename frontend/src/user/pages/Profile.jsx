@@ -39,7 +39,10 @@ function Profile() {
   const [existingUserImage, setExistingUserImage] = useState("")
   const [preview, setPreview] = useState("")
   const [pswdMatch, setPswdMatch] = useState(true);
-  const navigate = useNavigate(); 
+  const [changePassword, setChangePassword] = useState(false);
+  const navigate = useNavigate();
+  const [isVerified,setIsVerfied] = useState(false)
+  
 
   useEffect(() => {
     fetchUser();
@@ -49,8 +52,9 @@ function Profile() {
 
   const fetchUser = () => {
     const storedUser = getStoredUser();
-    console.log("storeduser",storedUser);
+    console.log("storeduser", storedUser);
     
+
     if (storedUser) {
       const user = storedUser;
 
@@ -136,16 +140,24 @@ function Profile() {
     } = userDetails;
 
     // basic validation
-    if (!username || !password || !cpassword || !bio || !linkedin || !github) {
-      toast.warning("Please fill the form completely");
+    if (!username || !bio || !linkedin || !github) {
+      toast.warning("Please fill the required fields");
       return;
     }
 
-    //password match check
-    if (!pswdMatch) {
-      toast.warning("Passwords do not match");
-      return;
+    // validate password ONLY if user chose to change it
+    if (changePassword) {
+      if (!userDetails.password || !userDetails.cpassword) {
+        toast.warning("Please fill password fields");
+        return;
+      }
+
+      if (!pswdMatch) {
+        toast.warning("Passwords do not match");
+        return;
+      }
     }
+
 
     // token check
     const token = sessionStorage.getItem("token");
@@ -163,9 +175,8 @@ function Profile() {
     const reqBody = new FormData();
 
     for (let key in userDetails) {
-
-      // skip unwanted fields
-      if (key === "cpassword") continue;
+      // skip password if not changing
+      if (key === "password" && !changePassword) continue;
 
       // image handling
       if (key === "picture") {
@@ -198,9 +209,13 @@ function Profile() {
 
       sessionStorage.setItem("user", JSON.stringify(result.data));
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      if (changePassword) {
+        // force re-login
+        sessionStorage.removeItem("token");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      }
     } else {
       console.log(result);
       toast.error("Something went wrong");
@@ -268,9 +283,33 @@ function Profile() {
 
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <InputGroup placeholder="Password" type='password' value={userDetails.password} onChange={(e) => setUserDetails({ ...userDetails, password: e.target.value })} />
-          <InputGroup placeholder="Confirm Password" type="password" value={userDetails.cpassword || ""} onChange={(e) => checkPasswordMatch(e.target.value)} />
+        <div className="space-y-4">
+          {!changePassword ? (
+            <button
+              type="button"
+              onClick={() => setChangePassword(true)}
+              className="text-sm text-purple-400 hover:underline"
+            >
+              Change Password
+            </button>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <InputGroup
+                placeholder="New Password"
+                type="password"
+                value={userDetails.password}
+                onChange={(e) =>
+                  setUserDetails({ ...userDetails, password: e.target.value })
+                }
+              />
+              <InputGroup
+                placeholder="Confirm Password"
+                type="password"
+                value={userDetails.cpassword || ""}
+                onChange={(e) => checkPasswordMatch(e.target.value)}
+              />
+            </div>
+          )}
         </div>
 
         {/* <InputGroup placeholder="Job Title" /> */}
@@ -418,7 +457,7 @@ function Profile() {
           </button>
         </div>
       </form>
-      <ToastContainer position='top-center' autoClose={3000} theme='colored' /> 
+      <ToastContainer position='top-center' autoClose={3000} theme='colored' />
 
     </div>
   )

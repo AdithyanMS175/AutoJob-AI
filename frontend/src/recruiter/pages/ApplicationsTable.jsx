@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ApplicantModal from "./ApplicantModal";
-import { deleteApplicationAPI, getJobApplicants } from "../../services/allAPI";
+import { acceptApplicationAPI, deleteApplicationAPI, getJobApplicants } from "../../services/allAPI";
 import { MdDelete } from "react-icons/md";
 
 const ApplicationsTable = ({ job, onClose }) => {
@@ -75,6 +75,45 @@ const ApplicationsTable = ({ job, onClose }) => {
     }
   };
 
+
+  const handleAcceptApplication = async (applicationId) => {
+    const confirmAccept = window.confirm(
+      "Accept this applicant for the job?"
+    );
+    if (!confirmAccept) return;
+
+    const token = sessionStorage.getItem("token");
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    
+
+    const reqHeader = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    const reqBody = {
+      recruiterId: user._id,
+    };
+    console.log(reqBody);
+
+
+    const result = await acceptApplicationAPI(
+      applicationId,
+      reqBody,
+      reqHeader
+    );
+
+    if (result.status === 200) {
+      // update status instantly
+      setApplications(prev =>
+        prev.map(app =>
+          app._id === applicationId
+            ? { ...app, status: "accepted" }
+            : app
+        )
+      );
+    }
+  };
+
   return (
     <div className="mt-6">
       <div className="flex justify-between mb-4">
@@ -89,6 +128,7 @@ const ApplicationsTable = ({ job, onClose }) => {
             <th className="p-3">Skills</th>
             <th className="p-3">Status</th>
             <th className="p-3">Action</th>
+            <th className="p-3">Chat</th>
           </tr>
         </thead>
         <tbody>
@@ -104,10 +144,19 @@ const ApplicationsTable = ({ job, onClose }) => {
               <td className="p-3 flex gap-3 items-center">
                 <button
                   onClick={() => setSelectedApplicant(app.userId)}
-                  className="text-purple-400 hover:underline"
+                  className="text-purple-400 hover:bg-purple-500 hover:text-white px-2 py-1 rounded-lg text-sm"
                 >
                   View Profile
                 </button>
+
+                {app.status !== "shortlisted" && (
+                  <button
+                    onClick={() => handleAcceptApplication(app._id)}
+                    className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded-lg text-sm"
+                  >
+                    Accept
+                  </button>
+                )}
 
                 <MdDelete
                   onClick={() => handleDeleteApplication(app._id)}
@@ -115,6 +164,7 @@ const ApplicationsTable = ({ job, onClose }) => {
                   title="Remove applicant"
                 />
               </td>
+              <td className="p-3"></td>
             </tr>
           ))}
         </tbody>

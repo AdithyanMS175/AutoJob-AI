@@ -123,7 +123,7 @@ const ApplicantModal = ({ applicant, onClose }) => {
               {applicant.resumes.map((resume, idx) => (
                 <li key={idx}>
                   <a
-                    href={`http://localhost:3000/uploads/${resume}`}
+                    href={`http://localhost:3000/uploads/resumes/${resume}`}
                     target="_blank"
                     className="text-purple-400 hover:underline"
                   >

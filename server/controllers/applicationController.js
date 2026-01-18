@@ -2,25 +2,46 @@ const applications = require("../models/applicationModel");
 const jwt = require(`jsonwebtoken`);
 const jobs = require("../models/jobModel");
 
+
+
 exports.applyJobsController = async (req, res) => {
   const { jobId, userId, resume } = req.body;
 
   try {
-    const existingJob = await applications.findOne({ jobId, userId });
-    if (existingJob) {
-      return res.status(409).json("You already applied for this job");
-    } else {
-      const newApplication = await applications.create({
-        jobId,
-        userId,
-        resume,
-      });
-      res.status(200).json(newApplication);
+    if (!jobId || !userId) {
+      return res.status(400).json("Job ID and User ID required");
     }
+
+    
+    const existingApplication = await applications.findOne({ jobId, userId });
+    if (existingApplication) {
+      return res.status(409).json("You already applied for this job");
+    }
+
+    
+    const job = await jobs.findById(jobId).select("recruiterId");
+    if (!job) {
+      return res.status(404).json("Job not found");
+    }
+
+    
+    const newApplication = await applications.create({
+      jobId,
+      userId,
+      recruiterId: job.recruiterId, 
+      resume: resume || "",
+      status: "applied",
+    });
+
+    res.status(200).json(newApplication);
+
   } catch (err) {
-    res.status(500).json(err);
+    console.error("Apply Job Error:", err);
+    res.status(500).json(err.message);
   }
 };
+
+
 exports.recruiterJobApplicantsController = async (req, res) => {
   try {
     const { jobId } = req.params;
@@ -75,7 +96,38 @@ exports.deleteApplicationController = async (req, res) => {
 };
 
 
+exports.acceptApplicationController = async (req, res) => {
+  try {
+    console.log("inside acceptApplicationController");
 
+    const { applicationId } = req.params;
+    const { recruiterId } = req.body;
+
+    // find application
+    const application = await applications
+      .findById(applicationId)
+      .populate("jobId");
+
+    if (!application) {
+      return res.status(404).json("Application not found");
+    }
+
+    // recruiter ownership check
+    if (application.jobId.recruiterId.toString() !== recruiterId) {
+      return res.status(403).json("Not authorized");
+    }
+
+    // update status
+    application.recruiterId = recruiterId;
+    application.status = "shortlisted";
+    await application.save();
+
+    res.status(200).json(application);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
+};
 
 
 

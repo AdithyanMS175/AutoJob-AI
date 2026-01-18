@@ -2,6 +2,7 @@ const applications = require("../models/applicationModel");
 const jobs = require("../models/jobModel");
 const users = require("../models/userModel");
 const jwt = require(`jsonwebtoken`);
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 //register
 exports.registerController = async (req, res) => {
@@ -34,7 +35,7 @@ exports.loginController = async (req, res) => {
       if (password == existingUser.password) {
         const token = jwt.sign(
           { userMail: existingUser.email, role: existingUser.role },
-          process.env.JWTSECRET
+          process.env.JWTSECRET,
         );
         res.status(200).json({ user: existingUser, token });
       } else {
@@ -62,7 +63,7 @@ exports.googleLoginController = async (req, res) => {
     if (existingUser) {
       const token = jwt.sign(
         { userMail: existingUser.email, role: existingUser.role },
-        process.env.JWTSECRET
+        process.env.JWTSECRET,
       );
       res.status(200).json({ user: existingUser, token });
     } else {
@@ -76,7 +77,7 @@ exports.googleLoginController = async (req, res) => {
 
       const token = jwt.sign(
         { userMail: newUser.email, role: newUser.role },
-        process.env.JWTSECRET
+        process.env.JWTSECRET,
       );
       res.status(200).json({ user: newUser, token });
     }
@@ -126,8 +127,8 @@ exports.userProfileUpdateController = async (req, res) => {
 
   const {
     username,
-    password,
     bio,
+    password,
     role,
     picture,
     linkedin,
@@ -155,7 +156,7 @@ exports.userProfileUpdateController = async (req, res) => {
     isVerified,
     phone,
     skills,
-    experience
+    experience,
   );
 
   try {
@@ -176,7 +177,7 @@ exports.userProfileUpdateController = async (req, res) => {
         skills: parseArray(skills),
         experience: parseArray(experience),
       },
-      { new: true }
+      { new: true },
     );
 
     res.status(200).json(updateUser);
@@ -205,7 +206,7 @@ exports.userResumeUploadController = async (req, res) => {
     const updatedUser = await users.findByIdAndUpdate(
       { _id: id },
       { $push: { resumes: resume } },
-      { new: true }
+      { new: true },
     );
 
     res.status(200).json(updatedUser);
@@ -218,29 +219,31 @@ exports.userResumeUploadController = async (req, res) => {
 //recruiter dashboard controller
 exports.recruiterDashboardController = async (req, res) => {
   try {
-    
     const { recruiterId } = req.body;
 
     // 1️⃣ Recruiter jobs
-    const recruiterJobs = await jobs.find({ recruiterId }).select("_id jobTitle");
+    const recruiterJobs = await jobs
+      .find({ recruiterId })
+      .select("_id jobTitle");
 
-    const jobIds = recruiterJobs.map(job => job._id);
+    const jobIds = recruiterJobs.map((job) => job._id);
 
     // 2️⃣ Total applications
     const totalApplications = await applications.countDocuments({
-      jobId: { $in: jobIds }
+      jobId: { $in: jobIds },
     });
 
     // 3️⃣ AI shortlisted (example condition)
     const shortlisted = await applications.countDocuments({
       jobId: { $in: jobIds },
-      aiScore: { $gte: 80 }
+      aiScore: { $gte: 80 },
     });
 
     // 4️⃣ Recent applications
-    const recentApplications = await applications.find({
-      jobId: { $in: jobIds }
-    })
+    const recentApplications = await applications
+      .find({
+        jobId: { $in: jobIds },
+      })
       .populate("userId", "username")
       .populate("jobId", "jobTitle")
       .sort({ createdAt: -1 })
@@ -251,11 +254,10 @@ exports.recruiterDashboardController = async (req, res) => {
       stats: {
         totalJobs: recruiterJobs.length,
         totalApplications,
-        shortlisted
+        shortlisted,
       },
-      recentApplications
+      recentApplications,
     });
-
   } catch (err) {
     console.error("Recruiter dashboard error:", err);
     res.status(500).json(err);
@@ -270,7 +272,7 @@ exports.adminDashboardController = async (req, res) => {
     const totalJobs = await jobs.countDocuments();
     const totalUsers = await users.countDocuments();
     const aiApplications = await applications.countDocuments({
-      aiScore: { $gte: 1 }
+      aiScore: { $gte: 1 },
     });
 
     const conversionRate = totalJobs
@@ -282,16 +284,16 @@ exports.adminDashboardController = async (req, res) => {
       {
         $match: {
           createdAt: {
-            $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-          }
-        }
+            $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+          },
+        },
       },
       {
         $group: {
           _id: { $dayOfWeek: "$createdAt" },
-          applications: { $sum: 1 }
-        }
-      }
+          applications: { $sum: 1 },
+        },
+      },
     ]);
 
     // 📈 Job trend (last 7 days)
@@ -299,16 +301,16 @@ exports.adminDashboardController = async (req, res) => {
       {
         $match: {
           createdAt: {
-            $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-          }
-        }
+            $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+          },
+        },
       },
       {
         $group: {
           _id: { $dayOfWeek: "$createdAt" },
-          jobs: { $sum: 1 }
-        }
-      }
+          jobs: { $sum: 1 },
+        },
+      },
     ]);
 
     // 🕒 Recent activity
@@ -324,13 +326,13 @@ exports.adminDashboardController = async (req, res) => {
         totalJobs,
         totalUsers,
         aiApplications,
-        conversionRate
+        conversionRate,
       },
       trends: {
         applications: appTrend,
-        jobs: jobTrend
+        jobs: jobTrend,
       },
-      recentLogs
+      recentLogs,
     });
   } catch (err) {
     console.error("Admin dashboard error:", err);
@@ -351,18 +353,17 @@ exports.getAllUsersController = async (req, res) => {
 //admin delete user Controller
 exports.deleteUserController = async (req, res) => {
   try {
-    console.log("deleteUserController")
+    console.log("deleteUserController");
     const { id } = req.params;
     console.log(id);
 
-    
     const user = await users.findById(id);
     if (!user) return res.status(404).json("User not found");
 
     // cleanup
     if (user.role === "recruiter") {
       const recruiterJobs = await jobs.find({ recruiterId: id });
-      const jobIds = recruiterJobs.map(j => j._id);
+      const jobIds = recruiterJobs.map((j) => j._id);
 
       await applications.deleteMany({ jobId: { $in: jobIds } });
       await jobs.deleteMany({ recruiterId: id });
@@ -380,4 +381,261 @@ exports.deleteUserController = async (req, res) => {
   }
 };
 
+// 🔹 Get all jobs
+exports.getAllJobsController = async (req, res) => {
+  console.log("getALlJobsController");
 
+  try {
+    const allJobs = await jobs.find().populate("recruiterId", "username email");
+
+    res.status(200).json(allJobs);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+// 🔹 Get all applications
+exports.getAllApplicationsController = async (req, res) => {
+  try {
+    const allApplications = await applications
+      .find()
+      .populate("userId", "username email")
+      .populate("jobId", "jobTitle recruiterId");
+
+    res.status(200).json(allApplications);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+// 🔹 Delete job + related applications
+exports.deleteAdminJobController = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+
+    await applications.deleteMany({ jobId });
+    await jobs.findByIdAndDelete(jobId);
+
+    res.status(200).json("Job deleted successfully");
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+// 🔹 Delete application
+exports.deleteAdminApplicationController = async (req, res) => {
+  try {
+    const { applicationId } = req.params;
+
+    await applications.findByIdAndDelete(applicationId);
+
+    res.status(200).json("Application deleted successfully");
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+//admin dashboard report
+exports.downloadDashboardReport = async (req, res) => {
+  try {
+    const totalUsers = await users.countDocuments();
+    const totalJobs = await jobs.countDocuments();
+    const totalApplications = await applications.countDocuments();
+    const aiApplications = await applications.countDocuments({
+      aiScore: { $ne: null },
+    });
+
+    const conversionRate = totalJobs
+      ? ((totalApplications / totalJobs) * 100).toFixed(2)
+      : 0;
+
+    const recentApps = await applications
+      .find()
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .populate("userId", "username email")
+      .populate("jobId", "jobTitle");
+
+    // Build CSV
+    let csv = `AutoJob AI – Admin Report\n\n`;
+    csv += `Total Users,${totalUsers}\n`;
+    csv += `Total Jobs,${totalJobs}\n`;
+    csv += `Total Applications,${totalApplications}\n`;
+    csv += `AI Applications,${aiApplications}\n`;
+    csv += `Conversion Rate,${conversionRate}%\n\n`;
+
+    csv += `Recent Applications\n`;
+    csv += `Candidate,Email,Job Title,Applied On\n`;
+
+    recentApps.forEach((app) => {
+      csv += `"${app.userId?.username}","${app.userId?.email}","${app.jobId?.jobTitle}","${new Date(app.createdAt).toLocaleString()}"\n`;
+    });
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=admin-dashboard-report.csv",
+    );
+
+    res.status(200).send(csv);
+  } catch (err) {
+    console.error("Report download error:", err);
+    res.status(500).json("Failed to generate report");
+  }
+};
+
+// USER VERIFICATION PAYMENT
+exports.userVerificationPaymentController = async (req, res) => {
+  console.log("Inside User Verification Payment Controller");
+
+  const email = req.payload;
+
+  try {
+    const user = await users.findOne({ email });
+    if (!user) {
+      return res.status(404).json("User not found");
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json("User already verified");
+    }
+
+    user.isVerified = true;
+    await user.save();
+
+    const line_items = [
+      {
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: "Recruiter Verification",
+            description: "Verified recruiter account on AutoJob AI",
+            metadata: {
+              userId: user._id.toString(),
+              email: user.email,
+            },
+          },
+          unit_amount: 2900,
+        },
+        quantity: 1,
+      },
+    ];
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items,
+      mode: "payment",
+      customer_email: user.email,
+      success_url: `http://localhost:5173/billing/success`,
+      cancel_url: `http://localhost:5173/billing/cancel`,
+    });
+
+    res.status(200).json({ checkOutURL: session.url });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+};
+
+exports.getCurrentUser = async (req, res) => {
+  console.log("getCurrentUser function triggered");
+  try {
+    const userMail = req.payload;
+    console.log(userMail);
+
+    // Fetch user from MongoDB
+    const user = await users.findOne({ email: userMail });
+
+    // FIXED: Corrected spelling from 'conosle' to 'console'
+    console.log("User data from DB:", user);
+
+    if (!user) {
+      return res.status(404).json("User not found");
+    }
+
+    res.status(200).json(user);
+  } catch (err) {
+    // Adding console.error here helps you see the actual error in your terminal
+    console.error("Backend Error:", err);
+    res.status(500).json(err);
+  }
+};
+
+
+exports.autoFillProfileFromResume = async (req, res) => {
+  console.log("🔥 Auto-fill API HIT");
+
+  try {
+    const email = req.payload.userMail;
+    const { resumeText } = req.body;
+
+    if (!resumeText) {
+      return res.status(400).json("Resume text missing");
+    }
+
+    const user = await users.findOne({ email });
+
+    const systemPrompt = `
+You are an AI resume parser.
+
+RULES:
+- Return ONLY valid JSON
+- No markdown
+- No explanation
+- Only include fields found in resume
+
+FORMAT:
+{ "username": "",
+  "education": [ { "degree": "", "institution": "", "year": "" } ],
+  "experience": [ { "company": "", "role": "", "years": "", "description": "" } ],
+ "skills": [] } `;
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: `${systemPrompt}\n\nRESUME TEXT:\n"""${resumeText}"""`,
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    const aiText =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    const jsonMatch = aiText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return res.status(500).json("Invalid AI response");
+
+    const parsedProfile = JSON.parse(jsonMatch[0]);
+
+   
+    const updatedUser = await users.findOneAndUpdate(
+      { email },
+      {
+        $set: {
+          ...(parsedProfile.username && { username: parsedProfile.username }),
+          ...(parsedProfile.education?.length && { education: parsedProfile.education }),
+          ...(parsedProfile.experience?.length && { experience: parsedProfile.experience }),
+          ...(parsedProfile.skills?.length && { skills: parsedProfile.skills }),
+        },
+      },
+      { new: true }
+    );
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Auto-fill error:", error);
+    res.status(500).json("Auto-fill failed");
+  }
+};

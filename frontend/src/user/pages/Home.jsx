@@ -17,6 +17,7 @@ import Header from '../components/Header';
 import ChatBot from '../components/ChatBot/ChatBot/ChatBot';
 import { applyJobAPI, userAllJobs } from '../../services/allAPI';
 import { toast, ToastContainer } from 'react-toastify';
+import { isProfileComplete } from '../utils/isProfileComplete';
 
 
 
@@ -30,7 +31,7 @@ const UserHome = () => {
     minSalary: 0
   });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [user, setUser] = useState()
+  const [user, setUser] = useState(null)
 
   // Animation Variants
   const containerVariants = {
@@ -48,12 +49,19 @@ const UserHome = () => {
 
   useEffect(() => {
     if (sessionStorage.getItem("token")) {
-      const token = sessionStorage.getItem("token")
+      const token = sessionStorage.getItem("token");
+      const user = sessionStorage.getItem("user");
+      setUser(JSON.parse(user))
       fetchJobs(token);
     }
 
 
   }, [])
+
+  if (user && user.isVerified) {
+    console.log(user.isVerified)
+  }
+
 
 
   const fetchJobs = async (token) => {
@@ -87,8 +95,6 @@ const UserHome = () => {
 
 
 
-
-
   const filteredJobs = allJobs.filter(job => {
     // 1. Text Search Logic (Title or Skills)
     const matchesSearch =
@@ -115,10 +121,13 @@ const UserHome = () => {
     console.log(id);
     console.log(user._id);
 
-
-
     if (!token) {
       toast.error("Please login to apply");
+      return;
+    }
+
+    if (!isProfileComplete(user)) {
+      toast.warning("Please complete your profile before applying");
       return;
     }
 
@@ -382,6 +391,7 @@ const UserHome = () => {
                     <button onClick={(e) => { e.stopPropagation(); handleApplyJob(selectedJob._id) }} className="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
                       <Sparkles className="w-5 h-5" />
                       Auto-Apply with AI
+
                     </button>
                   </div>
                 </div>
@@ -389,7 +399,11 @@ const UserHome = () => {
             </>
           )}
         </AnimatePresence>
-        <ChatBot />
+                
+        {user && user?.isVerified  && 
+          <ChatBot />
+        }
+
 
       </div>
 
