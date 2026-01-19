@@ -566,7 +566,8 @@ exports.autoFillProfileFromResume = async (req, res) => {
   console.log("🔥 Auto-fill API HIT");
 
   try {
-    const email = req.payload.userMail;
+    const email = req.payload;
+    console.log("Email:",email)
     const { resumeText } = req.body;
 
     if (!resumeText) {
@@ -610,6 +611,7 @@ FORMAT:
     );
 
     const data = await response.json();
+    console.log("🧠 GEMINI RAW RESPONSE:\n", JSON.stringify(data, null, 2));
 
     const aiText =
       data?.candidates?.[0]?.content?.parts?.[0]?.text;
