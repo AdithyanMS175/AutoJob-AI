@@ -28,6 +28,7 @@ function Profile() {
     password: "",
     cpassword: "",
     picture: "",
+    phone: "",
     education: [
       { degree: "", institution: "", year: "" }
     ],
@@ -65,6 +66,7 @@ function Profile() {
         password: "",
         picture: user.picture || "",
         bio: user.bio || "",
+        phone: user.phone || "",
         role: user.role || "",
         linkedin: user.linkedin || "",
         github: user.github || "",
@@ -312,6 +314,11 @@ function Profile() {
           )}
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <InputGroup placeholder="Phone" value={userDetails.phone} onChange={(e) => setUserDetails({ ...userDetails, phone: e.target.value })} />
+
+        </div>
+
         {/* <InputGroup placeholder="Job Title" /> */}
         <TextArea placeholder="Bio" value={userDetails.bio} onChange={(e) => setUserDetails({ ...userDetails, bio: e.target.value })} />
 
@@ -341,7 +348,7 @@ function Profile() {
 
               <InputGroup
                 placeholder="Year"
-                type="number"
+                type="text"
                 value={edu.year}
                 onChange={(e) => {
                   const updated = [...userDetails.education];
@@ -404,7 +411,7 @@ function Profile() {
 
               <InputGroup
                 placeholder="Years"
-                type="number"
+                type="text"
                 value={exp.years}
                 onChange={(e) => {
                   const updated = [...userDetails.experience];

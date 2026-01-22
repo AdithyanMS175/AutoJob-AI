@@ -23,6 +23,8 @@ import AdminManageJobs from './admin/pages/AdminManageJobs'
 import RecruiterProfile from './recruiter/pages/RecruiterProfile'
 import PaymentSuccess from './user/pages/BillingSuccess'
 import PaymentFailure from './user/pages/BillingFailure'
+import MyApplications from './user/pages/MyApplications'
+import AdminComplaints from './admin/pages/AdminComplaints'
 
 function App() {
 
@@ -40,6 +42,7 @@ function App() {
         <Route path='/user/settings' element={<Settings />} />
         <Route path="/billing/success" element={<PaymentSuccess />} />
         <Route path="/billing/cancel" element={<PaymentFailure />} />
+        <Route path="/user/myapplications" element={<MyApplications />} />
 
         {/* recruiter  */}
         <Route path='/recruiter' element={<RecruiterLayout />} >
@@ -61,6 +64,7 @@ function App() {
           <Route path="home" element={<AdminHome />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="jobs" element={<AdminManageJobs />} />
+          <Route path="complaints" element={<AdminComplaints />} />
         </Route>
 
 

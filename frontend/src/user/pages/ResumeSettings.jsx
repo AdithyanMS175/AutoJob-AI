@@ -1,6 +1,6 @@
 import { Upload } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { autoFillProfileAPI, getUserAPI, uploadResumeAPI } from '../../services/allAPI';
+import { autoFillProfileAPI, deleteResumeAPI, getUserAPI, uploadResumeAPI } from '../../services/allAPI';
 import { toast, ToastContainer } from 'react-toastify';
 import { getStoredUser } from '../../services/userStorage';
 import * as pdfjsLib from "pdfjs-dist";
@@ -127,13 +127,13 @@ function ResumeSettings() {
     const handleAutoFillProfile = async () => {
         try {
             setAutoFillLoading(true);
-             const storedResumeText = sessionStorage.getItem("resumeText");
+            const storedResumeText = sessionStorage.getItem("resumeText");
             console.log(storedResumeText);
 
             if (!storedResumeText) {
-            toast.error("Resume text not found. Please re-upload resume.");
-            return;
-        }
+                toast.error("Resume text not found. Please re-upload resume.");
+                return;
+            }
 
 
             const token = sessionStorage.getItem("token");
@@ -144,8 +144,8 @@ function ResumeSettings() {
             };
 
             const reqBody = {
-            resumeText: storedResumeText
-        };
+                resumeText: storedResumeText
+            };
 
             const result = await autoFillProfileAPI(reqBody, reqHeader);
 
@@ -177,6 +177,36 @@ function ResumeSettings() {
             </div>,
             { autoClose: false }
         );
+    };
+
+    const handleDeleteResume = async (resumeName) => {
+        const token = sessionStorage.getItem("token");
+        if (!token) return;
+
+        const reqHeader = {
+            Authorization: `Bearer ${token}`,
+        };
+
+        const reqBody = {
+            resumeName,
+        };
+
+        try {
+            const result = await deleteResumeAPI(userDetails.id, reqBody, reqHeader);
+
+            if (result.status === 200) {
+                toast.success("Resume deleted");
+
+                sessionStorage.setItem("user", JSON.stringify(result.data));
+
+                setUserDetails((prev) => ({
+                    ...prev,
+                    resumes: prev.resumes.filter((r) => r !== resumeName),
+                }));
+            }
+        } catch (err) {
+            toast.error("Failed to delete resume");
+        }
     };
 
 
@@ -217,15 +247,22 @@ function ResumeSettings() {
                             <span className="text-gray-300 text-sm truncate">
                                 {resume}
                             </span>
-
+                            <div className="">
                             <a
                                 href={`http://localhost:3000/uploads/resumes/${resume}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-purple-400 text-sm hover:underline"
+                                className="text-purple-400 text-sm hover:underline mx-3"
                             >
                                 View
                             </a>
+                            <button
+                                onClick={() => handleDeleteResume(resume)}
+                                className="text-red-400 text-sm hover:underline mx-3"
+                            >
+                                Delete
+                            </button>
+                            </div>
                         </div>
                     ))}
 
@@ -243,18 +280,7 @@ function ResumeSettings() {
                 </button>
             )}
 
-            <div className="space-y-4">
-                <h4 className="text-lg font-semibold text-white">AI Customization Rules</h4>
-                <div className="p-4 bg-[#161616] rounded-xl border border-white/5">
-                    <label className="flex items-start gap-3 cursor-pointer">
-                        <input type="checkbox" className="mt-1 w-4 h-4 rounded bg-gray-800 border-gray-600 text-purple-600 focus:ring-purple-500" defaultChecked />
-                        <div>
-                            <span className="text-white text-sm font-medium">Auto-Emphasize Skills</span>
-                            <p className="text-gray-500 text-xs mt-1">Allow AI to rearrange your skills based on the job description.</p>
-                        </div>
-                    </label>
-                </div>
-            </div>
+            
             <ToastContainer position='top-center' autoClose={3000} theme='colored' />
 
         </div>

@@ -1,4 +1,4 @@
-import { LogOut, Settings, Sparkles, User } from 'lucide-react';
+import { BriefcaseBusiness, House, LogOut, Settings, Sparkles, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
@@ -72,6 +72,20 @@ function Header() {
                 </p>
               </div>
               <ul className="py-1">
+                <Link to={'/user/home'}>
+
+                  <li className="px-4 py-2 hover:bg-white/5 cursor-pointer flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors">
+                   <House className="w-4 h-4" />  Home
+                  </li>
+
+                </Link>
+                <Link to={'/user/myapplications'}>
+
+                  <li className="px-4 py-2 hover:bg-white/5 cursor-pointer flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors">
+                   <BriefcaseBusiness className="w-4 h-4" /> My Applications
+                  </li>
+
+                </Link>
                 <Link to={'/user/settings'}>
 
                   <li className="px-4 py-2 hover:bg-white/5 cursor-pointer flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors">

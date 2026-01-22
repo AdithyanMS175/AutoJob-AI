@@ -563,7 +563,7 @@ exports.getCurrentUser = async (req, res) => {
 
 
 exports.autoFillProfileFromResume = async (req, res) => {
-  console.log("🔥 Auto-fill API HIT");
+  console.log(" Auto-fill API HIT");
 
   try {
     const email = req.payload;
@@ -577,19 +577,28 @@ exports.autoFillProfileFromResume = async (req, res) => {
     const user = await users.findOne({ email });
 
     const systemPrompt = `
-You are an AI resume parser.
+          You are an AI resume parser.
 
-RULES:
-- Return ONLY valid JSON
-- No markdown
-- No explanation
-- Only include fields found in resume
+          RULES:
+          - Return ONLY valid JSON
+          - No markdown
+          - No explanation
+          - Only include fields found in resume
 
-FORMAT:
-{ "username": "",
-  "education": [ { "degree": "", "institution": "", "year": "" } ],
-  "experience": [ { "company": "", "role": "", "years": "", "description": "" } ],
- "skills": [] } `;
+          FORMAT:
+            {   
+                "username": "",
+                "linkedIn":"",
+                "github":"",
+                "phone":"",
+                "education": [ 
+                              { "degree": "", "institution": "", "year": "" } 
+                             ],
+                "experience": [
+                               { "company": "", "role": "", "years": "", "description": "" }
+                              ],
+                "skills": [] 
+            }   `;
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
@@ -641,3 +650,26 @@ FORMAT:
     res.status(500).json("Auto-fill failed");
   }
 };
+
+exports.deleteResumeController = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { resumeName } = req.body;
+
+    const updatedUser = await users.findByIdAndUpdate(
+      userId,
+      { $pull: { resumes: resumeName } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json("User not found");
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    console.error("deleteResumeController error:", err);
+    res.status(500).json(err.message);
+  }
+};
+

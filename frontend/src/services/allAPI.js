@@ -28,22 +28,12 @@ export const getJobsAPI = async (id, reqHeader) => {
 
 //user/:id/edit - put request by edit component when update btn clicked
 export const editUserAPI = async (id, reqBody, reqHeader) => {
-  return await commonAPI(
-    "PUT",
-    `${serverURL}/user/${id}/edit`,
-    reqBody,
-    reqHeader,
-  );
+  return await commonAPI("PUT",`${serverURL}/user/${id}/edit`,reqBody,reqHeader);
 };
 
 //user upload resumes
 export const uploadResumeAPI = async (id, reqBody, reqHeader) => {
-  return await commonAPI(
-    "PUT",
-    `${serverURL}/user/${id}/resume`,
-    reqBody,
-    reqHeader,
-  );
+  return await commonAPI("PUT",`${serverURL}/user/${id}/resume`,reqBody,reqHeader);
 };
 
 //user all jobs
@@ -53,7 +43,6 @@ export const userAllJobs = async (reqHeader) => {
 
 //payment
 export const verifyPaymentAPI = async (planData, reqHeader) => {
- 
   return await commonAPI("PUT", `${serverURL}/users/payment`, planData, reqHeader);
 };
 
@@ -64,8 +53,27 @@ export const getCurrentUserAPI = async (reqHeader) => {
 
 //automatic resume fill
 export const autoFillProfileAPI = async (reqBody, reqHeader) => {
-  return await commonAPI("POST",`${serverURL}/user/auto-fill-profile`,reqBody,reqHeader
-  );
+  return await commonAPI("POST",`${serverURL}/user/auto-fill-profile`,reqBody,reqHeader);
+};
+
+// candidate - get my applications
+export const getMyApplicationsAPI = async (reqBody, reqHeader) => {
+  return await commonAPI("POST",`${serverURL}/candidate/my-applications`,reqBody,reqHeader);
+};
+
+// delete resume
+export const deleteResumeAPI = async (userId, reqBody, reqHeader) => {
+  return await commonAPI("DELETE",`${serverURL}/user/delete-resume/${userId}`,reqBody,reqHeader);
+};
+
+// create support / complaint
+export const createSupportAPI = async (reqBody, reqHeader) => {
+  return await commonAPI("POST",`${serverURL}/support/create`,reqBody,reqHeader);
+};
+
+// get my complaints
+export const getMySupportsAPI = async (id,reqHeader) => {
+  return await commonAPI("GET",`${serverURL}/support/my/${id}`,{},reqHeader);
 };
 
 //add job
@@ -150,3 +158,22 @@ export const adminDeleteApplicationAPI = async (applicationId, reqHeader) =>
 //admin dashboard report
 export const adminDownloadReportAPI = async (reqHeader) =>
   commonAPI("GET", `${serverURL}/admin/dashboard/report`, "", reqHeader);
+
+
+// admin - get all complaints
+export const getAllSupportsAPI = async (reqHeader) => {
+  return await commonAPI("GET",`${serverURL}/admin/supports`,"",reqHeader);
+};
+
+
+// admin reply support
+export const replySupportAPI = async (supportId, reqBody, reqHeader) => {
+  return await commonAPI("PUT",`${serverURL}/admin/support/reply/${supportId}`,reqBody,reqHeader);
+};
+
+// admin delete support
+export const deleteSupportAPI = async (supportId, reqHeader) => {
+  return await commonAPI("DELETE",`${serverURL}/admin/support/delete/${supportId}`,"",reqHeader);
+};
+
+

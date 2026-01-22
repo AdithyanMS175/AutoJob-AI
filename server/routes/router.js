@@ -5,6 +5,7 @@ const applicationController = require('../controllers/applicationController')
 const multerMiddleware = require('../middlewares/multerMiddlewares');
 const resumeMulter = require('../middlewares/resumeMulter');
 const jobController = require('../controllers/jobController');
+const supportController = require('../controllers/supportController');
 const chatController  = require('../controllers/chatController');
 const adminMiddleware = require('../middlewares/adminMiddleware');
 
@@ -44,6 +45,18 @@ router.get("/users/me", jwtMiddleware, userController.getCurrentUser);
 
 //user resume autofill
 router.post("/user/auto-fill-profile",jwtMiddleware,userController.autoFillProfileFromResume);
+
+// candidate - get my applications
+router.post("/candidate/my-applications",jwtMiddleware,applicationController.getMyApplicationsController);
+
+//candidate resume delete
+router.delete("/user/delete-resume/:userId",jwtMiddleware,userController.deleteResumeController);
+
+// user create complaint
+router.post("/support/create",jwtMiddleware,supportController.createSupportController);
+
+//user get all complaints
+router.get("/support/my/:id",jwtMiddleware,supportController.getMySupportsController);
 
 // recruiter - get my jobs
 router.post("/recruiter/my-jobs",jwtMiddleware,jobController.getMyJobsController);
@@ -90,5 +103,14 @@ router.delete("/admin/application/:applicationId",adminMiddleware,userController
 
 //admin dashboard report
 router.get("/admin/dashboard/report",adminMiddleware,userController.downloadDashboardReport);
+
+// admin - get all complaints
+router.get("/admin/supports",jwtMiddleware,supportController.getAllSupportsController);
+
+// admin - reply to complaint
+router.put("/admin/support/reply/:supportId",jwtMiddleware,supportController.replySupportController);
+
+// admin - delete complaint
+router.delete("/admin/support/delete/:supportId",jwtMiddleware,supportController.deleteSupportController);
 
 module.exports = router

@@ -130,7 +130,25 @@ exports.acceptApplicationController = async (req, res) => {
 };
 
 
+// candidate - get my applications
+exports.getMyApplicationsController = async (req, res) => {
+  console.log("Inside getMyApplicationsController");
 
+  try {
+    const { userId } = req.body;
+
+    const myApplications = await applications
+      .find({ userId })
+      .populate("jobId", "jobTitle")
+      .populate("recruiterId", "username");
+
+    res.status(200).json(myApplications);
+    console.log(myApplications)
+  } catch (err) {
+    console.error("getMyApplicationsController error:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
 
 
 

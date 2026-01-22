@@ -2,12 +2,12 @@ export const isProfileComplete = (user) => {
   if (!user) return false;
 
   const requiredFields = [
-    user.name,
+    user.username,
     user.email,
     user.phone,
-    user.resume,
+    user.resumes,
     user.skills && user.skills.length > 0,
-    user.education && user.education.length > 0, // or experience
+    user.education && user.education.length > 0, 
   ];
 
   return requiredFields.every(Boolean);

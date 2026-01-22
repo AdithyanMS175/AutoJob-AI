@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BarChart2, Users, Settings, Briefcase, Menu, X, LogOut } from "lucide-react";
+import { BarChart2, Users, Settings, Briefcase, Menu, X, LogOut, Bug } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 const Sidebar = () => {
@@ -12,7 +12,9 @@ const Sidebar = () => {
 		{ name: "Dashboard", icon: BarChart2, color: "#6366f1", href: "/admin/home" },
 		{ name: "Manage Jobs", icon: Briefcase, color: "#8B5CF6", href: "/admin/jobs" },
 		{ name: "Candidates", icon: Users, color: "#EC4899", href: "/admin/users" },
-		{ name: "Settings", icon: Settings, color: "#10B981", href: "/admin/settings" },
+		{ name: "Complaints", icon: Bug, color: "#EC4899", href: "/admin/complaints" },
+		
+		
 	];
 
 	const handleLogout = () => {
