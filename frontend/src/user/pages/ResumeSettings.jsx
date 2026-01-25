@@ -1,16 +1,13 @@
 import { Upload } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { autoFillProfileAPI, deleteResumeAPI, getUserAPI, uploadResumeAPI } from '../../services/allAPI';
+import { analyzeResumeATSAPI, autoFillProfileAPI, deleteResumeAPI, getUserAPI, uploadResumeAPI } from '../../services/allAPI';
 import { toast, ToastContainer } from 'react-toastify';
 import { getStoredUser } from '../../services/userStorage';
 import * as pdfjsLib from "pdfjs-dist";
 import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
 import { extractPdfText } from '../utils/extractPdfText';
-
-
-
-
-
+import ResumeATSModal from '../components/ResumeAtsModal';
+import serverURL from '../../services/serverURL';
 
 
 
@@ -21,6 +18,11 @@ function ResumeSettings() {
     });
     const [autoFillLoading, setAutoFillLoading] = useState(false);
     const [resumeText, setResumeText] = useState("");
+    const [atsData, setAtsData] = useState(null);
+    const [showATSModal, setShowATSModal] = useState(false);
+    const [atsLoading, setAtsLoading] = useState(false);
+
+
 
     useEffect(() => {
         fetchUser();
@@ -56,6 +58,7 @@ function ResumeSettings() {
 
     const handleResumeUpload = async (e) => {
         const file = e.target.files[0];
+        let extractedText = "";
         if (!file) return;
 
         // validation
@@ -77,10 +80,11 @@ function ResumeSettings() {
 
         // Extract PDF text BEFORE upload
         if (file.type === "application/pdf") {
-            const extractedText = await extractPdfText(file);
+            extractedText = await extractPdfText(file);
             console.log("📄 Extracted Resume Text:", extractedText);
             setResumeText(extractedText);
             sessionStorage.setItem("resumeText", extractedText);
+
         }
 
         const token = sessionStorage.getItem("token");
@@ -108,15 +112,19 @@ function ResumeSettings() {
         if (result.status === 200) {
             toast.success("Resume uploaded successfully");
 
-            // update session storage
+
             sessionStorage.setItem(
                 "user",
                 JSON.stringify(result.data)
             );
 
-            // refresh local state
+            if (extractedText) {
+                await analyzeATS(extractedText);
+            }
+
+
             fetchUser();
-            confirmAutoFill();
+            // confirmAutoFill();
         } else {
             console.log(result);
             toast.error("Resume upload failed");
@@ -209,6 +217,34 @@ function ResumeSettings() {
         }
     };
 
+    const analyzeATS = async (resumeText) => {
+        try {
+            setAtsLoading(true);
+            const token = sessionStorage.getItem("token");
+            if (!token) return;
+
+            const reqHeader = {
+                Authorization: `Bearer ${token}`,
+            };
+
+            const reqBody = { resumeText };
+
+            const result = await analyzeResumeATSAPI(reqBody, reqHeader);
+
+            if (result.status === 200) {
+                setAtsData(result.data);
+                setShowATSModal(true);
+            } else {
+                toast.error("Failed to analyze resume ATS");
+            }
+        } catch (error) {
+            toast.error("ATS analysis failed");
+            console.error(error);
+        } finally {
+            setAtsLoading(false);
+        }
+    };
+
 
     return (
         <div className="space-y-8">
@@ -248,20 +284,20 @@ function ResumeSettings() {
                                 {resume}
                             </span>
                             <div className="">
-                            <a
-                                href={`http://localhost:3000/uploads/resumes/${resume}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-purple-400 text-sm hover:underline mx-3"
-                            >
-                                View
-                            </a>
-                            <button
-                                onClick={() => handleDeleteResume(resume)}
-                                className="text-red-400 text-sm hover:underline mx-3"
-                            >
-                                Delete
-                            </button>
+                                <a
+                                    href={`${serverURL}/uploads/resumes/${resume}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-purple-400 text-sm mx-3 rounded-lg cursor-pointer hover:bg-white p-1"
+                                >
+                                    View
+                                </a>
+                                <button
+                                    onClick={() => handleDeleteResume(resume)}
+                                    className="text-red-400 text-sm hover:bg-white p-1 rounded-lg cursor-pointer mx-3"
+                                >
+                                    Delete
+                                </button>
                             </div>
                         </div>
                     ))}
@@ -274,13 +310,41 @@ function ResumeSettings() {
                 <button
                     onClick={handleAutoFillProfile}
                     disabled={autoFillLoading}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-medium transition-colors"
+                    className="px-4 py-2 rounded bg-purple-600 text-white flex items-center gap-2 disabled:opacity-60"
                 >
-                    {autoFillLoading ? "Auto-Filling Profile..." : "Auto-Fill Profile Using Resume"}
+                    {autoFillLoading && (
+                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    )}
+                    {autoFillLoading ? "Updating Profile..." : "Auto-Fill Profile"}
                 </button>
             )}
 
-            
+            {showATSModal && (
+                <ResumeATSModal
+                    data={atsData}
+                    onClose={() => setShowATSModal(false)}
+                    autoFillLoading={autoFillLoading}
+                    onApply={() => {
+                        setShowATSModal(false);
+                        handleAutoFillProfile();
+                    }}
+                />
+            )}
+
+
+            {atsLoading && (
+                <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center">
+                    <div className="bg-[#0f0f0f] p-6 rounded-xl border border-white/10 flex flex-col items-center">
+                        <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <p className="text-white text-sm">
+                            Analyzing resume ATS score…
+                        </p>
+                    </div>
+                </div>
+            )}
+
+
+
             <ToastContainer position='top-center' autoClose={3000} theme='colored' />
 
         </div>

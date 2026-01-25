@@ -84,7 +84,7 @@ const ApplicationsTable = ({ job, onClose }) => {
 
     const token = sessionStorage.getItem("token");
     const user = JSON.parse(sessionStorage.getItem("user"));
-    
+
 
     const reqHeader = {
       Authorization: `Bearer ${token}`,
@@ -111,6 +111,8 @@ const ApplicationsTable = ({ job, onClose }) => {
             : app
         )
       );
+      fetchApplicants();
+
     }
   };
 

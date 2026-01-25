@@ -263,7 +263,7 @@ function Profile() {
           <button
             type="button"
             onClick={() => document.getElementById("profileImage").click()}
-            className="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+            className="bg-white text-black px-4 py-2 rounded-lg text-sm cursor-pointer font-medium hover:bg-purple-400 hover:text-white transition-colors"
           >
             Change Avatar
           </button>
@@ -290,7 +290,7 @@ function Profile() {
             <button
               type="button"
               onClick={() => setChangePassword(true)}
-              className="text-sm text-purple-400 hover:underline"
+              className="text-sm text-purple-400 hover:bg-purple-400 hover:text-white p-3 rounded-lg cursor-pointer"
             >
               Change Password
             </button>
@@ -362,6 +362,7 @@ function Profile() {
 
           <button
             type="button"
+            className='hover:text-purple-400 cursor-pointer'
             onClick={() =>
               setUserDetails({
                 ...userDetails,
@@ -434,6 +435,7 @@ function Profile() {
 
           <button
             type="button"
+            className='hover:text-purple-400 cursor-pointer'
             onClick={() =>
               setUserDetails({
                 ...userDetails,
@@ -459,7 +461,7 @@ function Profile() {
 
 
         <div className="pt-4">
-          <button type="button" onClick={handleUpdateUser} className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-colors flex items-center gap-2">
+          <button type="button" onClick={handleUpdateUser} className="bg-purple-600 hover:bg-white hover:text-purple-400 cursor-pointer text-white px-6 py-3 rounded-xl font-medium transition-colors flex items-center gap-2">
             <Save className="w-4 h-4" /> Save Changes
           </button>
         </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Bell, LogOut, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import serverURL from "../../services/serverURL";
 
 function Header() {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ function Header() {
         <div className="flex items-center gap-3">
           {admin?.picture ? (
             <img
-              src={`http://localhost:3000/uploads/${admin.picture}`}
+              src={`${serverURL}/uploads/${admin.picture}`}
               alt={admin.username}
               className="w-8 h-8 rounded-full object-cover border border-gray-600"
             />

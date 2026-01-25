@@ -2,6 +2,7 @@ import { BriefcaseBusiness, House, LogOut, Settings, Sparkles, User } from 'luci
 import { motion, AnimatePresence } from 'motion/react';
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import serverURL from '../../services/serverURL';
 
 function Header() {
 
@@ -43,7 +44,7 @@ function Header() {
           <div className="w-8 h-8 rounded-full overflow-hidden border border-white/20">
             {user?.picture ? (
               <img
-                src={`http://localhost:3000/uploads/${user.picture}`}
+                src={`${serverURL}/uploads/${user.picture}`}
                 alt={user.username}
                 className="w-full h-full object-cover"
               />

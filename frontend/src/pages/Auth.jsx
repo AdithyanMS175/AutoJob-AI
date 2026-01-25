@@ -25,7 +25,7 @@ const RoleToggle = ({ role, setRole }) => {
     <div className="relative flex p-1 bg-zinc-800/50 rounded-xl border border-zinc-700/50 mb-6">
       {/* Sliding Background */}
       <motion.div
-        className="absolute inset-y-1 bg-orange-500 rounded-lg shadow-lg shadow-orange-500/20"
+        className="absolute  inset-y-1 bg-orange-500 rounded-lg shadow-lg shadow-orange-500/20"
         initial={false}
         animate={{
           x: role === 'candidate' ? 0 : '100%',
@@ -37,7 +37,7 @@ const RoleToggle = ({ role, setRole }) => {
       <button
         type="button"
         onClick={() => setRole('candidate')}
-        className={`relative z-10 w-1/2 py-2 text-xs font-semibold transition-colors duration-200 ${role === 'candidate' ? 'text-white' : 'text-zinc-400'
+        className={`relative z-10 w-1/2 py-2 text-xs cursor-pointer font-semibold transition-colors duration-200 ${role === 'candidate' ? 'text-white' : 'text-zinc-400'
           }`}
       >
         Job Seeker
@@ -46,7 +46,7 @@ const RoleToggle = ({ role, setRole }) => {
       <button
         type="button"
         onClick={() => setRole('recruiter')}
-        className={`relative z-10 w-1/2 py-2 text-xs font-semibold transition-colors duration-200 ${role === 'recruiter' ? 'text-white' : 'text-zinc-400'
+        className={`relative z-10 w-1/2 py-2 text-xs cursor-pointer font-semibold transition-colors duration-200 ${role === 'recruiter' ? 'text-white' : 'text-zinc-400'
           }`}
       >
         Recruiter
@@ -316,7 +316,7 @@ const Auth = ({ registerURL }) => {
                 </div>
                 <button
                   type="button"
-                  className="cursor-pointer w-full py-3 bg-zinc-700 hover:bg-zinc-600 text-white rounded-xl font-semibold transition-colors duration-200 shadow-lg shadow-zinc-900/20"
+                  className="cursor-pointer w-full py-3 bg-zinc-700 hover:bg-orange-400 text-white rounded-xl font-semibold transition-colors duration-200 shadow-lg shadow-zinc-900/20"
                   onClick={registerURL ? handleregister : handleLogin}
 
                 >
@@ -332,8 +332,8 @@ const Auth = ({ registerURL }) => {
               </div>
 
               {/* Social Login Buttons */}
-              <div className="grid grid-cols-3 gap-3">
-                <button className="cursor-pointer flex justify-center items-center py-2.5 bg-zinc-800/50 rounded-xl hover:bg-zinc-800 transition-colors border border-zinc-700/50">
+              <div className="flex items-center justify-center">
+                <button className="mx-3 p-4 cursor-pointer flex justify-center items-center py-2.5 bg-zinc-800/50 rounded-xl hover:bg-zinc-800 transition-colors border border-zinc-700/50">
                   {/* <FcGoogle size={20} /> */}
                   <GoogleLogin className="hidden"
                     onSuccess={credentialResponse => {
@@ -345,12 +345,12 @@ const Auth = ({ registerURL }) => {
                     }}
                   />
                 </button>
-                <button className="cursor-pointer flex justify-center items-center py-2.5 bg-zinc-800/50 rounded-xl hover:bg-zinc-800 transition-colors border border-zinc-700/50 text-[#1877F2]">
+                {/* <button className="cursor-pointer flex justify-center items-center py-2.5 bg-zinc-800/50 rounded-xl hover:bg-zinc-800 transition-colors border border-zinc-700/50 text-[#1877F2]">
                   <FaFacebook size={20} />
                 </button>
                 <button className="cursor-pointer flex justify-center items-center py-2.5 bg-zinc-800/50 rounded-xl hover:bg-zinc-800 transition-colors border border-zinc-700/50">
                   <FaApple size={20} />
-                </button>
+                </button> */}
               </div>
 
               <p className="text-center text-zinc-400 mt-6 text-xs">

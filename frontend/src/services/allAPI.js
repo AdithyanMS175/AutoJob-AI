@@ -146,6 +146,11 @@ export const adminGetJobsAPI = async (reqHeader) =>
 export const adminGetApplicationsAPI = async (reqHeader) =>
   commonAPI("GET", `${serverURL}/admin/applications`, "", reqHeader);
 
+// ATS resume analysis
+export const analyzeResumeATSAPI = (reqBody, reqHeader) => {
+  return commonAPI("POST",`${serverURL}/resume/ats`,reqBody,reqHeader);
+};
+
 //admin delete jobs
 export const adminDeleteJobAPI = async (jobId, reqHeader) =>
   commonAPI("DELETE", `${serverURL}/admin/job/${jobId}`, "", reqHeader);

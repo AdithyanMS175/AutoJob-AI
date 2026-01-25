@@ -6,8 +6,10 @@ const multerMiddleware = require('../middlewares/multerMiddlewares');
 const resumeMulter = require('../middlewares/resumeMulter');
 const jobController = require('../controllers/jobController');
 const supportController = require('../controllers/supportController');
+const resumeAtsController = require('../controllers/resumeAtsController');
 const chatController  = require('../controllers/chatController');
 const adminMiddleware = require('../middlewares/adminMiddleware');
+
 
 const router = new express.Router()
 
@@ -57,6 +59,8 @@ router.post("/support/create",jwtMiddleware,supportController.createSupportContr
 
 //user get all complaints
 router.get("/support/my/:id",jwtMiddleware,supportController.getMySupportsController);
+
+router.post("/resume/ats",jwtMiddleware,resumeAtsController.analyzeResumeATS);
 
 // recruiter - get my jobs
 router.post("/recruiter/my-jobs",jwtMiddleware,jobController.getMyJobsController);

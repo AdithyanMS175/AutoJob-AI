@@ -1,3 +1,5 @@
+import serverURL from "../../services/serverURL";
+
 const ApplicantModal = ({ applicant, onClose }) => {
   if (!applicant) return null;
 
@@ -8,7 +10,7 @@ const ApplicantModal = ({ applicant, onClose }) => {
         {/* Header */}
         <div className="flex items-center gap-4">
           <img
-            src={`http://localhost:3000/uploads/${applicant.picture}`}
+            src={`${serverURL}/uploads/${applicant.picture}`}
             alt={applicant.username}
             className="w-20 h-20 rounded-full object-cover border border-slate-700"
           />
@@ -123,7 +125,7 @@ const ApplicantModal = ({ applicant, onClose }) => {
               {applicant.resumes.map((resume, idx) => (
                 <li key={idx}>
                   <a
-                    href={`http://localhost:3000/uploads/resumes/${resume}`}
+                    href={`${serverURL}/uploads/resumes/${resume}`}
                     target="_blank"
                     className="text-purple-400 hover:underline"
                   >

@@ -1,5 +1,6 @@
 import React from "react";
 import { X } from "lucide-react";
+import serverURL from "../../services/serverURL";
 
 const AdminUserModal = ({ user, onClose }) => {
   if (!user) return null;
@@ -14,7 +15,7 @@ const AdminUserModal = ({ user, onClose }) => {
         <div className="flex items-center gap-4">
           {user.picture ? (
             <img
-              src={`http://localhost:3000/uploads/${user.picture}`}
+              src={`${serverURL}/uploads/${user.picture}`}
               className="w-16 h-16 rounded-full object-cover"
             />
           ) : (
