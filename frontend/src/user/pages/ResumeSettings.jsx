@@ -6,7 +6,7 @@ import { getStoredUser } from '../../services/userStorage';
 import * as pdfjsLib from "pdfjs-dist";
 import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
 import { extractPdfText } from '../utils/extractPdfText';
-import ResumeATSModal from '../components/ResumeAtsModal';
+import ResumeATSModal from '../components/ResumeATSModal';
 import serverURL from '../../services/serverURL';
 
 
