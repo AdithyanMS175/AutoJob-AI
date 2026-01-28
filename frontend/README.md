@@ -1,5 +1,3 @@
-# 🚧 UNDER DEVELOPMENT 🚧
-
 ## 🚀 AutoJob AI
 
 AutoJob AI is an **intelligent, full-stack job application automation platform** designed to simplify and accelerate the job-hunting process. By leveraging **AI, workflow automation, and a modern MERN-based architecture**, AutoJob AI helps users reduce repetitive work, apply smarter, and track applications efficiently in today’s competitive job market.
