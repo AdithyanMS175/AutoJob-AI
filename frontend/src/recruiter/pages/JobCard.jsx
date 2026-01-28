@@ -42,7 +42,7 @@ const JobCard = ({ job,onJobDeleted  }) => {
           <p className="text-slate-400">{job.location}</p>
 
           <p className="text-purple-400 text-sm mt-1">
-            {job.applicantCount} Applicants
+            {job?.applicantCount} Applicants
           </p>
         </div>
 

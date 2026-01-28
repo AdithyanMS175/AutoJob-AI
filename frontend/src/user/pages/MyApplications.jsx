@@ -117,12 +117,7 @@ const MyApplications = () => {
 
                 {/* Details */}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mt-6">
-                  <div>
-                    <p className="text-white text-sm">AI Score</p>
-                    <p className="text-white font-medium">
-                      {app.aiScore || 0}
-                    </p>
-                  </div>
+                 
 
                   <div>
                     <p className="text-white text-sm">Applied On</p>

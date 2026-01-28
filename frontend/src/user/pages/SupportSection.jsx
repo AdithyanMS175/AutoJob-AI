@@ -8,6 +8,7 @@ function SupportSection() {
     const [subject, setSubject] = useState("");
     const [message, setMessage] = useState("");
     const [myComplaints, setMyComplaints] = useState([]);
+    const [userId,setUserId] = useState("")
 
     useEffect(() => {
         fetchMyComplaints();
@@ -18,7 +19,9 @@ function SupportSection() {
         if (!token) return;
 
         const user = JSON.parse(sessionStorage.getItem("user"));
+
         const id = user._id;
+        setUserId(id)
 
         const reqHeader = {
             Authorization: `Bearer ${token}`,
@@ -30,11 +33,16 @@ function SupportSection() {
         }
     };
     console.log(myComplaints)
+    console.log(userId)
 
     const handleSubmitSupport = async () => {
         const token = sessionStorage.getItem("token");
         if (!token) {
             toast.error("Please login to continue");
+            return;
+        }
+        if(!userId){
+            toast.error("UserId Cannot get");
             return;
         }
 
@@ -47,7 +55,7 @@ function SupportSection() {
             Authorization: `Bearer ${token}`,
         };
 
-        const reqBody = { subject, message };
+        const reqBody = { userId,subject, message };
 
         const result = await createSupportAPI(reqBody, reqHeader);
         if (result.status === 201) {

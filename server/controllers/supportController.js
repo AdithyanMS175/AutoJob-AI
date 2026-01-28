@@ -5,6 +5,7 @@ const supports = require("../models/supportModel");
 exports.createSupportController = async (req, res) => {
   try {
     const { userId,subject, message } = req.body;
+    
 
     if (!subject || !message) {
       return res.status(400).json("All fields are required");

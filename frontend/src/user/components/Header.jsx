@@ -8,12 +8,15 @@ function Header() {
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [user, setUser] = useState()
+  const [existingImage, setExistingImage] = useState()
   const navigate = useNavigate()
 
   useEffect(() => {
 
     const storedUser = sessionStorage.getItem("user");
-    setUser(JSON.parse(storedUser))
+    const parsedUser = JSON.parse(storedUser);
+    setUser(parsedUser);
+    setExistingImage(parsedUser?.picture);
   }, [])
 
   const handleLogout = () => {
@@ -44,7 +47,9 @@ function Header() {
           <div className="w-8 h-8 rounded-full overflow-hidden border border-white/20">
             {user?.picture ? (
               <img
-                src={`${serverURL}/uploads/${user.picture}`}
+                src={existingImage?.startsWith("https://lh3.googleusercontent.com/")
+                  ? existingImage : `${serverURL}/uploads/${existingImage}`
+                }
                 alt={user.username}
                 className="w-full h-full object-cover"
               />
@@ -76,14 +81,14 @@ function Header() {
                 <Link to={'/user/home'}>
 
                   <li className="px-4 py-2 hover:bg-white/5 cursor-pointer flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors">
-                   <House className="w-4 h-4" />  Home
+                    <House className="w-4 h-4" />  Home
                   </li>
 
                 </Link>
                 <Link to={'/user/myapplications'}>
 
                   <li className="px-4 py-2 hover:bg-white/5 cursor-pointer flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors">
-                   <BriefcaseBusiness className="w-4 h-4" /> My Applications
+                    <BriefcaseBusiness className="w-4 h-4" /> My Applications
                   </li>
 
                 </Link>

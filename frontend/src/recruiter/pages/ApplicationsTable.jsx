@@ -136,9 +136,9 @@ const ApplicationsTable = ({ job, onClose }) => {
         <tbody>
           {applications.map(app => (
             <tr key={app._id} className="border-t border-slate-700">
-              <td className="p-3">{app.userId.username}</td>
+              <td className="p-3">{app.userId?.username}</td>
               <td className="p-3">
-                {app.userId.skills.join(", ")}
+                {app.userId?.skills.join(", ")}
               </td>
               <td className="p-3">
                 <span className="text-yellow-400">{app.status}</span>

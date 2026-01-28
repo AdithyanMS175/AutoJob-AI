@@ -55,7 +55,7 @@ const RecruiterDashboard = () => {
 
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <StatCard
           title="Total Active Jobs"
           count={stats?.totalJobs || 0}
@@ -66,11 +66,7 @@ const RecruiterDashboard = () => {
           count={stats?.totalApplications || 0}
           trend="All time"
         />
-        <StatCard
-          title="AI Shortlisted"
-          count={stats?.shortlisted || 0}
-          trend="High match"
-        />
+        
       </div>
 
       {/* Recent Activity Section */}
@@ -82,7 +78,7 @@ const RecruiterDashboard = () => {
               <tr className="border-b border-slate-800 text-slate-400 text-sm">
                 <th className="py-3 px-4">Candidate</th>
                 <th className="py-3 px-4">Role Applied</th>
-                <th className="py-3 px-4">AI Match</th>
+               
                 <th className="py-3 px-4">Date</th>
                 <th className="py-3 px-4">Action</th>
               </tr>
@@ -94,16 +90,12 @@ const RecruiterDashboard = () => {
                   className="border-b border-slate-800/50 hover:bg-slate-800/50"
                 >
                   <td className="py-3 px-4 font-medium">
-                    {app.userId.username}
+                    {app.userId?.username}
                   </td>
                   <td className="py-3 px-4">
-                    {app.jobId.jobTitle}
+                    {app.jobId?.jobTitle}
                   </td>
-                  <td className="py-3 px-4">
-                    <span className="text-purple-400 font-bold bg-purple-400/10 px-2 py-1 rounded border border-purple-500/20">
-                      {app.aiScore}%
-                    </span>
-                  </td>
+                 
                   <td className="py-3 px-4 text-slate-500">
                     {new Date(app.createdAt).toLocaleDateString()}
                   </td>

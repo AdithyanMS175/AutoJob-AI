@@ -390,7 +390,7 @@ const UserHome = () => {
                   <div className="mt-10 pt-6 border-t border-white/10">
                     <button onClick={(e) => { e.stopPropagation(); handleApplyJob(selectedJob._id) }} className="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
                       <Sparkles className="w-5 h-5" />
-                      Auto-Apply with AI
+                      Apply For this Job
 
                     </button>
                   </div>

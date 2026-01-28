@@ -116,7 +116,7 @@ exports.acceptApplicationController = async (req, res) => {
     application.status = "shortlisted";
     await application.save();
 
-    // 📧 SEND EMAIL TO CANDIDATE
+    //  SEND EMAIL TO CANDIDATE
     await sendMail({
       to: application.userId.email,
       subject: `You’ve been shortlisted for ${application.jobId.jobTitle}`,
@@ -152,7 +152,7 @@ exports.acceptApplicationController = async (req, res) => {
     </div>
   `,
     });
-    console.log("📧 Sending shortlisted mail to:", application.userId.email);
+    console.log(" Sending shortlisted mail to:", application.userId.email);
     console.log("ENV CHECK EMAIL_USER:", process.env.EMAIL_USER);
     console.log(
       "ENV CHECK EMAIL_PASS:",

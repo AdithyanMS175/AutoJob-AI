@@ -193,9 +193,9 @@ const HomePage = () => {
         <div className="container mx-auto px-6 relative z-10 text-center">
           <div ref={titleRef} className="mb-6">
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-4">
-              <span className="block">AI That Applies to Jobs</span>
+              <span className="block">AI-Powered App Architect</span>
               <span className="block bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                While You Sleep
+                Precision at Scale
               </span>
             </h1>
           </div>

@@ -18,13 +18,8 @@ const plans = [
     price: 29,
     priceId: "price_pro_xxx",
     features: ["10 Job Posts", "AI Scoring", "Analytics"],
-  },
-  {
-    name: "Enterprise",
-    price: 99,
-    priceId: "price_enterprise_xxx",
-    features: ["Unlimited Jobs", "Advanced AI", "Team Access"],
-  },
+  }
+  
 ];
 
 const PlanModal = ({ onClose }) => {
@@ -90,7 +85,7 @@ const PlanModal = ({ onClose }) => {
           Choose Your Plan
         </h3>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 gap-6">
           {plans.map((plan) => (
             <div
               key={plan.name}
