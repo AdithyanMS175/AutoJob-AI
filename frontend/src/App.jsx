@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import './App.css'
 import { Route, Routes } from 'react-router-dom'
 import HomePage from './HomePage'
@@ -25,9 +25,10 @@ import PaymentSuccess from './user/pages/BillingSuccess'
 import PaymentFailure from './user/pages/BillingFailure'
 import MyApplications from './user/pages/MyApplications'
 import AdminComplaints from './admin/pages/AdminComplaints'
+import { routeGuardContext } from './contextAPI/AuthContext'
 
 function App() {
-
+  const { role, authorisedUser, setAuthorisedUser } = useContext(routeGuardContext);
 
   return (
     <>
@@ -37,35 +38,46 @@ function App() {
         <Route path='/signup' element={<Auth registerURL={true} />} />
 
         {/* user  */}
-        <Route path='/user/home' element={<Home />} />
-        <Route path='/user/profile' element={<Profile />} />
-        <Route path='/user/settings' element={<Settings />} />
-        <Route path="/billing/success" element={<PaymentSuccess />} />
-        <Route path="/billing/cancel" element={<PaymentFailure />} />
-        <Route path="/user/myapplications" element={<MyApplications />} />
+        {role == "candidate" && <>
+          <Route path='/user/home' element={<Home />} />
+          <Route path='/user/profile' element={<Profile />} />
+          <Route path='/user/settings' element={<Settings />} />
+          <Route path="/billing/success" element={<PaymentSuccess />} />
+          <Route path="/billing/cancel" element={<PaymentFailure />} />
+          <Route path="/user/myapplications" element={<MyApplications />} />
+        </>}
+
 
         {/* recruiter  */}
-        <Route path='/recruiter' element={<RecruiterLayout />} >
-          <Route path='home' element={<RecruiterDashboard />} />
-          <Route path='post-job' element={<PostJob />} />
-          <Route path='aimatchbadge' element={<AIMatchBadge />} />
-          <Route path='applicationtable' element={<ApplicantTable />} />
-          <Route path='my-jobs' element={<MyJobs />} />
-          <Route path='my-profile' element={<RecruiterProfile />} />
+        {role == "recruiter" &&
 
-          <Route path='jobcard' element={<JobCard />} />
-          <Route path='statusdropdown' element={<StatusDropdown />} />
-          <Route path='statuswidget' element={<StatsWidget />} />
+          <Route path='/recruiter' element={<RecruiterLayout />} >
+            <Route path='home' element={<RecruiterDashboard />} />
+            <Route path='post-job' element={<PostJob />} />
+            <Route path='aimatchbadge' element={<AIMatchBadge />} />
+            <Route path='applicationtable' element={<ApplicantTable />} />
+            <Route path='my-jobs' element={<MyJobs />} />
+            <Route path='my-profile' element={<RecruiterProfile />} />
 
-        </Route>
+            <Route path='jobcard' element={<JobCard />} />
+            <Route path='statusdropdown' element={<StatusDropdown />} />
+            <Route path='statuswidget' element={<StatsWidget />} />
 
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminHome />} />
-          <Route path="home" element={<AdminHome />} />
-          <Route path="users" element={<AdminUsers />} />
-          <Route path="jobs" element={<AdminManageJobs />} />
-          <Route path="complaints" element={<AdminComplaints />} />
-        </Route>
+          </Route>
+
+        }
+
+        {role == "admin" &&
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminHome />} />
+            <Route path="home" element={<AdminHome />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="jobs" element={<AdminManageJobs />} />
+            <Route path="complaints" element={<AdminComplaints />} />
+          </Route>
+
+        }
+
 
 
 
