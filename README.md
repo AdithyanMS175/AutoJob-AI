@@ -1,5 +1,3 @@
-# 🚧 UNDER DEVELOPMENT 🚧
-
 ## 🚀 AutoJob AI
 
 AutoJob AI is an **intelligent, full-stack job application automation platform** designed to simplify and accelerate the job-hunting process. By leveraging **AI, workflow automation, and a modern MERN-based architecture**, AutoJob AI helps users reduce repetitive work, apply smarter, and track applications efficiently in today’s competitive job market.
@@ -139,7 +137,7 @@ Create a `.env` file inside the `server` directory:
 ```env
 GEMINI_API_KEY=your_gemini_api_key
 DATABASE_URL=your_mongodb_or_nhost_url
-PORT=5000
+PORT=3000
 ```
 
 ---
@@ -199,8 +197,10 @@ Student Project So No License if you plan to use it just let me know!!
 ## 📬 Contact
 
 **Adithyan M S**
-GitHub: [[https://github.com/your-username](https://github.com/AdithyanMS175/)]
-Project Link: [[https://github.com/your-username/autojob-ai](https://github.com/AdithyanMS175/AutoJob-AI/)]
+GitHub: [[https://github.com/AdithyanMS175](https://github.com/AdithyanMS175/)]
+
+Project Link: [[https://github.com/AdithyanMS175/AutoJob-AI](https://github.com/AdithyanMS175/AutoJob-AI/)]
+
 LinkedIn Link: [[https://www.linkedin.com/in/adithyan-m-s-bb56b829a](https://www.linkedin.com/in/adithyan-m-s-bb56b829a)]
 ---
 
