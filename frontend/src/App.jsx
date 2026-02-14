@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import './App.css'
 import { Route, Routes } from 'react-router-dom'
 import HomePage from './HomePage'
@@ -26,6 +26,7 @@ import PaymentFailure from './user/pages/BillingFailure'
 import MyApplications from './user/pages/MyApplications'
 import AdminComplaints from './admin/pages/AdminComplaints'
 import { routeGuardContext } from './contextAPI/AuthContext'
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
   const { role, authorisedUser, setAuthorisedUser } = useContext(routeGuardContext);
@@ -47,7 +48,6 @@ function App() {
           <Route path="/user/myapplications" element={<MyApplications />} />
         </>}
 
-
         {/* recruiter  */}
         {role == "recruiter" &&
 
@@ -58,7 +58,6 @@ function App() {
             <Route path='applicationtable' element={<ApplicantTable />} />
             <Route path='my-jobs' element={<MyJobs />} />
             <Route path='my-profile' element={<RecruiterProfile />} />
-
             <Route path='jobcard' element={<JobCard />} />
             <Route path='statusdropdown' element={<StatusDropdown />} />
             <Route path='statuswidget' element={<StatsWidget />} />
@@ -78,13 +77,9 @@ function App() {
 
         }
 
-
-
-
-
-
         <Route path="/*" element={<Pnf />} />
       </Routes>
+      <Analytics/>
     </>
   )
 }
